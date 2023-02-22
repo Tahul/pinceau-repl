@@ -41,7 +41,7 @@
     "url": "https://github.com/Tahul/pinceau-repl/issues"
   },
   "homepage": "https://github.com/Tahul/pinceau-repl#readme",
-  "devDependencies": {
+  "dependencies": {
     "@babel/types": "^7.21.0",
     "@microsoft/api-extractor": "^7.34.4",
     "@types/node": "^18.14.0",
