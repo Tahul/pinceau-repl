@@ -42,7 +42,7 @@ const isTheme = computed(() => (props.store.state.activeFile.filename === 'token
 </script>
 
 <template>
-  <div class="vue-repl">
+  <div class="pinceau-repl">
     <SplitPane :layout="layout">
       <template #left>
         <EditorContainer :editor-component="editor" />
@@ -63,14 +63,14 @@ const isTheme = computed(() => (props.store.state.activeFile.filename === 'token
 </template>
 
 <style scoped>
-.vue-repl {
+.pinceau-repl {
   --bg: #fff;
   --bg-soft: #f8f8f8;
   --border: #ddd;
   --text-light: #888;
   --font-code: Menlo, Monaco, Consolas, 'Courier New', monospace;
-  --color-branding: #42b883;
-  --color-branding-dark: #416f9c;
+  --color-branding: #ED4D31;
+  --color-branding-dark: #4560B0;
   --header-height: 38px;
 
   font-size: 13px;
@@ -81,13 +81,13 @@ const isTheme = computed(() => (props.store.state.activeFile.filename === 'token
   background-color: var(--bg-soft);
 }
 
-.dark .vue-repl {
+.dark .pinceau-repl {
   --bg: #1a1a1a;
   --bg-soft: #242424;
   --border: #383838;
   --text-light: #aaa;
-  --color-branding: #42d392;
-  --color-branding-dark: #89ddff;
+  --color-branding: #F48E7C;
+  --color-branding-dark: #7B8FCB;
 }
 
 :deep(button) {

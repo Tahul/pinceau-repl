@@ -1,21 +1,21 @@
 {
-  "name": "@vue/repl",
-  "version": "1.3.2",
-  "description": "Vue component for editing Vue components",
+  "name": "pinceau-repl",
+  "version": "0.0.1",
+  "description": "Vue component for editing Vue components with Pinceau",
   "main": "dist/ssr-stub.js",
-  "module": "dist/vue-repl.js",
+  "module": "dist/pinceau-repl.js",
   "files": [
     "dist"
   ],
   "types": "dist/repl.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/vue-repl.js",
+      "import": "./dist/pinceau-repl.js",
       "require": "./dist/ssr-stub.js",
       "types": "./dist/repl.d.ts"
     },
     "./monaco-editor": {
-      "import": "./dist/vue-repl-monaco-editor.js",
+      "import": "./dist/pinceau-repl-monaco-editor.js",
       "require": null,
       "types": "./dist/src/editor/MonacoEditor.vue.d.ts"
     },
@@ -28,16 +28,19 @@
     "build-types": "vue-tsc -p tsconfig.build.json && api-extractor run -c api-extractor.json && rimraf dist/src",
     "prepublishOnly": "npm run build && npm run build-types"
   },
+  "author": "Evan You",
+  "contributors": [
+    "Yaël Guilloux <yael.guilloux@gmail.com>"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vuejs/repl.git"
+    "url": "git+https://github.com/Tahul/pinceau-repl.git"
   },
-  "author": "Evan You",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vuejs/repl/issues"
+    "url": "https://github.com/Tahul/pinceau-repl/issues"
   },
-  "homepage": "https://github.com/vuejs/repl#readme",
+  "homepage": "https://github.com/Tahul/pinceau-repl#readme",
   "devDependencies": {
     "@babel/types": "^7.21.0",
     "@microsoft/api-extractor": "^7.34.4",
@@ -50,28 +53,22 @@
     "typescript": "^4.9.5",
     "vite": "^4.1.4",
     "vue": "^3.2.47",
-    "vue-tsc": "^1.1.6"
-  },
-  "peerDependencies": {
-    "vue": "^3.2.37"
-  },
-  "dependencies": {
-    "@jspm/core": "^2.0.1",
+    "vue-tsc": "^1.1.7",
     "js-beautify": "^1.14.7",
     "monaco-editor": "^0.35.0",
     "monaco-editor-core": "^0.35.0",
     "monaco-editor-textmate": "^4.0.0",
     "monaco-textmate": "^3.0.1",
-    "monaco-volar": "^0.0.6",
-    "node-stdlib-browser": "^1.2.0",
+    "monaco-volar": "^0.0.8",
     "onigasm": "^2.2.5",
-    "path-browserify": "^1.0.1",
     "pinceau": "latest",
     "postcss-custom-properties": "^13.1.4",
     "postcss-dark-theme-class": "^0.7.3",
     "postcss-nested": "^6.0.1",
     "source-map-js": "^1.0.2",
-    "unenv": "^1.2.1",
-    "vite-plugin-node-polyfills": "^0.7.0"
+    "unenv": "^1.2.1"
+  },
+  "peerDependencies": {
+    "vue": "^3.2.37"
   }
 }

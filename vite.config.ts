@@ -46,8 +46,8 @@ export default defineConfig({
     
     rollupOptions: {
       input: {
-        'vue-repl': './src/index.ts',
-        'vue-repl-monaco-editor': './src/editor/MonacoEditor.vue',
+        'pinceau-repl': './src/index.ts',
+        'pinceau-repl-monaco-editor': './src/editor/MonacoEditor.vue',
       },
       external: ['vue', 'vue/compiler-sfc', 'pinceau/runtime', 'source-map-js', 'fs', 'jiti', 'pinceau']
     },
