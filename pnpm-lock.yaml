@@ -5,6 +5,7 @@ specifiers:
   '@microsoft/api-extractor': ^7.34.4
   '@types/node': ^18.14.0
   '@vitejs/plugin-vue': ^4.0.0
+  '@vue/compiler-sfc': ^3.2.47
   fflate: ^0.7.4
   hash-sum: ^2.0.0
   jiti: ^1.17.1
@@ -35,6 +36,7 @@ devDependencies:
   '@microsoft/api-extractor': 7.34.4_@types+node@18.14.0
   '@types/node': 18.14.0
   '@vitejs/plugin-vue': 4.0.0_vite@4.1.4+vue@3.2.47
+  '@vue/compiler-sfc': 3.2.47
   fflate: 0.7.4
   hash-sum: 2.0.0
   jiti: 1.17.1
@@ -2060,7 +2062,7 @@ packages:
   /monaco-volar/0.0.8_iinmcxz7ozaq52s43ma67yalqe:
     resolution: {integrity: sha512-hJdMZmRAl6Yesm1gOAar8v+2dd3SbtFXrY8aAktgMVZstq4AV18m1z9N2NrKh4rMeQ0L/QWIOTofx9MTsnz6rA==}
     peerDependencies:
-      monaco-editor-core: ^0.33.0
+      monaco-editor-core: ^0.33.0 || 0.35.0
       onigasm: ^2.2.5
     dependencies:
       monaco-editor-core: 0.35.0
