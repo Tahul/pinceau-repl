@@ -13,6 +13,7 @@ import { ExportSpecifier, Identifier, Node } from '@babel/types'
 export function compileModulesForPreview(store: Store, isSSR = false) {
   const seen = new Set<File>()
   const processed: string[] = []
+
   processFile(
     store,
     store.state.files[store.state.mainFile],
@@ -24,6 +25,14 @@ export function compileModulesForPreview(store: Store, isSSR = false) {
   if (!isSSR) {
     // also add css files that are not imported
     for (const filename in store.state.files) {
+      if (filename === 'tokens.config.ts') {
+        const file = store.state.files[filename]
+        if (!seen.has(file)) {
+          processed.push(
+            `\nwindow.__css__ += ${JSON.stringify(file.compiled.css)}`
+          )
+        }
+      }
       if (filename.endsWith('.css')) {
         const file = store.state.files[filename]
         if (!seen.has(file)) {
@@ -255,7 +264,7 @@ function processModule(
   }
 
   // 4. convert dynamic imports
-  ;(walk as any)(ast, {
+  ; (walk as any)(ast, {
     enter(node: Node, parent: Node) {
       if (node.type === 'Import' && parent.type === 'CallExpression') {
         const arg = parent.arguments[0]

@@ -4,9 +4,21 @@ import {
   BindingMetadata,
   shouldTransformRef,
   transformRef,
-  CompilerOptions
+  CompilerOptions,
+  MagicString,
+  babelParse
 } from 'vue/compiler-sfc'
 import { transform } from 'sucrase'
+import { transforms, defaultExport, printAst, theme, createTokensHelper } from 'pinceau/utils'
+// @ts-ignore
+import { css as beautifyCss } from 'js-beautify'
+// Pinceau's PostCSS Plugins
+// @ts-ignore
+import PostCSSCustomProperties from 'postcss-custom-properties'
+// @ts-ignore
+import PostCSSNested from 'postcss-nested'
+// @ts-ignore
+import PostCSSDarkThemeClass from 'postcss-dark-theme-class'
 // @ts-ignore
 import hashId from 'hash-sum'
 
@@ -18,12 +30,39 @@ async function transformTS(src: string) {
   }).code
 }
 
+
 export async function compileFile(
   store: Store,
   { filename, code, compiled }: File
 ) {
   if (!code.trim()) {
     store.state.errors = []
+    return
+  }
+
+  // Get and compile tokens.config.ts file content
+  if (filename === 'tokens.config.ts') {
+    try {
+      code = await transformTS(code)
+      const defineThemeNode = defaultExport(babelParse(code, { sourceType: 'module' })) as any
+      const themeExpression = defineThemeNode.arguments[0]
+      code = printAst(themeExpression).code
+      const _eval = eval
+      _eval(`var _tokensConfig = ${code}`)
+      // @ts-ignore
+      if (_tokensConfig) {
+        const definitions = {}
+        // @ts-ignore
+        const builtTheme = await theme.generateTheme(_tokensConfig as any, definitions, { studio: true, definitions: true, colorSchemeMode: 'media' }, true, false)
+        compiled.css = beautifyCss(builtTheme.outputs?.css)
+        compiled.ts = builtTheme.outputs?.ts
+        compiled.definitions = builtTheme.outputs?.definitions
+        compiled.schema = builtTheme.outputs?.schema
+        compiled.utils = builtTheme.outputs?.utils
+      }
+    } catch (e) {
+      console.log({ e })
+    }
     return
   }
 
@@ -50,8 +89,12 @@ export async function compileFile(
     return
   }
 
+  // Transform a Vue component with Pinceau transformers
+  code = transforms.replaceStyleTs(code, filename)
+  const magicString = new MagicString(code, { filename }) as any
+  const pinceauTransformed = transforms.transformVueSFC(code, { id: filename } as any, magicString, { $tokens: () => undefined, options: { runtime: true } } as any)
   const id = hashId(filename)
-  const { errors, descriptor } = store.compiler.parse(code, {
+  const { errors, descriptor } = store.compiler.parse(pinceauTransformed?.magicString?.toString() || pinceauTransformed?.code || code, {
     filename,
     sourceMap: true
   })
@@ -60,14 +103,12 @@ export async function compileFile(
     return
   }
 
+
   if (
-    descriptor.styles.some((s) => s.lang) ||
+    descriptor.styles.some((s) => !['postcss', 'ts'].includes(s?.lang || '')) ||
     (descriptor.template && descriptor.template.lang)
   ) {
-    store.state.errors = [
-      `lang="x" pre-processors for <template> or <style> are currently not ` +
-        `supported.`
-    ]
+    store.state.errors = [`Only lang="ts" or lang="postcss" is supported for <style> blocks.`]
     return
   }
 
@@ -166,7 +207,7 @@ export async function compileFile(
   if (clientCode || ssrCode) {
     appendSharedCode(
       `\n${COMP_IDENTIFIER}.__file = ${JSON.stringify(filename)}` +
-        `\nexport default ${COMP_IDENTIFIER}`
+      `\nexport default ${COMP_IDENTIFIER}`
     )
     compiled.js = clientCode.trimStart()
     compiled.ssr = ssrCode.trimStart()
@@ -182,14 +223,19 @@ export async function compileFile(
       return
     }
 
-    const styleResult = await store.compiler.compileStyleAsync({
+    const styleResult = store.compiler.compileStyle({
       ...store.options?.style,
       source: style.content,
       filename,
       id,
       scoped: style.scoped,
-      modules: !!style.module
+      postcssPlugins: [
+        PostCSSCustomProperties,
+        PostCSSDarkThemeClass,
+        PostCSSNested
+      ],
     })
+
     if (styleResult.errors.length) {
       // postcss uses pathToFileURL which isn't polyfilled in the browser
       // ignore these errors for now

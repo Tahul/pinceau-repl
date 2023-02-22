@@ -1,18 +1,22 @@
 <script lang="ts">
 import { loadMonacoEnv, loadWasm } from './env';
 import { prepareVirtualFiles } from 'monaco-volar'
+
 loadMonacoEnv();
 loadWasm();
 prepareVirtualFiles();
 </script>
+
 <script lang="ts" setup>
-import { onMounted, onBeforeUnmount, ref, shallowRef, nextTick, watchEffect } from 'vue';
+import { onBeforeUnmount, ref, shallowRef, nextTick, watchEffect, watch, onMounted } from 'vue';
 import * as monaco from 'monaco-editor-core';
-import { setupThemePromise, getOrCreateModel } from './utils';
-import { loadGrammars, loadTheme } from 'monaco-volar'
+import { getOrCreateModel } from './utils';
+import { loadTheme } from 'monaco-volar'
+import { loadGrammars } from './grammars'
 
 const props = withDefaults(defineProps<{
   value?: string
+  filename?: string;
   language?: string;
   readonly?: boolean
 }>(), {
@@ -31,60 +35,73 @@ const editor = shallowRef<monaco.editor.IStandaloneCodeEditor | undefined>(undef
 
 const currentModel = shallowRef<monaco.editor.ITextModel>(
   getOrCreateModel(
-    monaco.Uri.parse('file:///demo.vue'),
-    'vue',
-    props.value ?? ''
-  )
+      monaco.Uri.parse(`file:///${props.filename}`),
+      props.language,
+      props.value ?? ''
+    )
 )
 
 watchEffect(() => {
-  if (currentModel.value.getValue() !== props.value) {
-    currentModel.value.setValue(props.value)
-  }
+  if (currentModel?.value?.getValue() !== props.value) currentModel?.value?.setValue(props.value)
 })
 
-onMounted(async () => {
+onBeforeUnmount(() => editor.value?.dispose());
+
+watch(
+  () => props.filename,
+  async (newFilename) => {
+    currentModel.value = getOrCreateModel(
+      monaco.Uri.parse(`file:///${newFilename}`),
+      props.language,
+      props.value ?? ''
+    )
+    await refreshEditor()
+  }
+)
+
+onMounted(async () => await refreshEditor())
+
+async function refreshEditor() {
   const theme = await loadTheme();
   ready.value = true;
   await nextTick();
 
-  if (!containerRef.value) {
-    throw new Error("Cannot find containerRef");
+  if (!containerRef.value) { throw new Error("Cannot find containerRef") };
+
+  if (!editor.value) {
+    const editorInstance = monaco.editor.create(containerRef.value, {
+      theme,
+      language: props.language,
+      model: currentModel.value,
+      readOnly: props.readonly,
+      automaticLayout: true,
+      scrollBeyondLastLine: false,
+      minimap: {
+        enabled: false,
+      },
+      disableLayerHinting: true,
+      inlineSuggest: {
+        enabled: false,
+      },
+      inlayHints: {
+        enabled: 'off'
+      },
+      codeLens: false
+    });
+    editor.value = editorInstance
+    await loadGrammars(editorInstance);
+    editorInstance.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => emits('save', editorInstance.getValue()));
+    editorInstance.onDidChangeModelContent(() => emits('change', editorInstance.getValue()));
+  } else {
+    editor.value.setModel(currentModel.value)
   }
-
-  const editorInstance = monaco.editor.create(containerRef.value, {
-    theme,
-    model: currentModel.value,
-    readOnly: props.readonly,
-    automaticLayout: true,
-    scrollBeyondLastLine: false,
-    minimap: {
-      enabled: false,
-    },
-    inlineSuggest: {
-      enabled: false,
-    }
-  });
-  editor.value = editorInstance
-
-  await loadGrammars(editorInstance);
-
-  editorInstance.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-    emits('save', editorInstance.getValue());
-  });
-
-  editorInstance.onDidChangeModelContent(() => {
-    emits('change', editorInstance.getValue());
-  });
-});
-
-onBeforeUnmount(() => {
-  editor.value?.dispose();
-});
+}
 </script>
+
 <template>
-  <div class="editor" ref="containerRef"></div>
+  <div class="editor" ref="containerRef" />
 </template>
+
 <style>
 .editor {
   position: relative;

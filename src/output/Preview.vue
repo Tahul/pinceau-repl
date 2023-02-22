@@ -160,6 +160,8 @@ async function updatePreview() {
   runtimeError.value = null
   runtimeWarning.value = null
 
+  console.log('???')
+
   let isSSR = props.ssr
   if (store.vueVersion) {
     const [_, minor, patch] = store.vueVersion.split('.')
@@ -185,12 +187,14 @@ async function updatePreview() {
         `const __modules__ = {};`,
         ...ssrModules,
         `import { renderToString as _renderToString } from 'vue/server-renderer'
+         import { plugin as pinceau } from 'pinceau/runtime'
          import { createSSRApp as _createApp } from 'vue'
          const AppComponent = __modules__["${mainFile}"].default
          AppComponent.name = 'Repl'
          const app = _createApp(AppComponent)
          app.config.unwrapInjectedRef = true
          app.config.warnHandler = () => {}
+         // app.use(pinceau)
          window.__ssr_promise__ = _renderToString(app).then(html => {
            document.body.innerHTML = '<div id="app">' + html + '</div>'
          }).catch(err => {
@@ -219,13 +223,13 @@ async function updatePreview() {
     // if main file is a vue file, mount it.
     if (mainFile.endsWith('.vue')) {
       codeToEval.push(
-        `import { ${
-          isSSR ? `createSSRApp` : `createApp`
-        } as _createApp } from "vue"
+        `import { ${isSSR ? `createSSRApp` : `createApp`} as _createApp } from "vue"
+        import { plugin as pinceau } from 'pinceau/runtime'
         const _mount = () => {
           const AppComponent = __modules__["${mainFile}"].default
           AppComponent.name = 'Repl'
           const app = window.__app__ = _createApp(AppComponent)
+          app.use(pinceau)
           app.config.unwrapInjectedRef = true
           app.config.errorHandler = e => console.error(e)
           app.mount('#app')

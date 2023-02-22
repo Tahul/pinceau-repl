@@ -11,7 +11,29 @@ import { OutputModes } from './output/types'
 
 const defaultMainFile = 'App.vue'
 
-const welcomeCode = `
+const defaultThemeFile = 'tokens.config.ts'
+
+const defaultTheme = `import { defineTheme } from 'pinceau'
+
+export default defineTheme({
+  color: {
+    red: {
+      50: '#FCDFDA',
+      100: '#FACFC7',
+      200: '#F7AEA2',
+      300: '#F48E7C',
+      400: '#F06D57',
+      500: '#ED4D31',
+      600: '#D32F12',
+      700: '#A0240E',
+      800: '#6C1809',
+      900: '#390D05',
+    }
+  }
+})
+`
+
+const defaultComponent = `
 <script setup>
 import { ref } from 'vue'
 
@@ -19,9 +41,18 @@ const msg = ref('Hello World!')
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-  <input v-model="msg">
+  <button class="my-button">
+    {{ msg }}
+  </button>
 </template>
+
+<style scoped lang="ts">
+css({
+  '.my-button': {
+    backgroundColor: 'red'
+  }
+})
+</style>
 `.trim()
 
 export class File {
@@ -30,7 +61,11 @@ export class File {
   hidden: boolean
   compiled = {
     js: '',
+    ts: '',
     css: '',
+    utils: '',
+    definitions: '',
+    schema: '',
     ssr: ''
   }
 
@@ -63,6 +98,7 @@ export interface Store {
   options?: SFCOptions
   compiler: typeof defaultCompiler
   vueVersion?: string
+  pinceauVersion?: string
   init: () => void
   setActive: (filename: string) => void
   addFile: (filename: string | File) => void
@@ -79,24 +115,31 @@ export interface StoreOptions {
   outputMode?: OutputModes | string
   defaultVueRuntimeURL?: string
   defaultVueServerRendererURL?: string
+  defaultPinceauURL?: string
+  defaultPinceauRuntimeURL?: string
 }
 
 export class ReplStore implements Store {
   state: StoreState
   compiler = defaultCompiler
   vueVersion?: string
+  pinceauVersion?: string
   options?: SFCOptions
   initialShowOutput: boolean
   initialOutputMode: OutputModes
 
   private defaultVueRuntimeURL: string
   private defaultVueServerRendererURL: string
+  private defaultPinceauURL: string
+  private defaultPinceauRuntimeURL: string
   private pendingCompiler: Promise<any> | null = null
 
   constructor({
     serializedState = '',
     defaultVueRuntimeURL = `https://unpkg.com/@vue/runtime-dom@${version}/dist/runtime-dom.esm-browser.js`,
     defaultVueServerRendererURL = `https://unpkg.com/@vue/server-renderer@${version}/dist/server-renderer.esm-browser.js`,
+    defaultPinceauURL = `https://unpkg.com/pinceau@latest/dist/index.mjs`,
+    defaultPinceauRuntimeURL = `https://unpkg.com/pinceau@latest/dist/runtime.mjs`,
     showOutput = false,
     outputMode = 'preview'
   }: StoreOptions = {}) {
@@ -109,19 +152,20 @@ export class ReplStore implements Store {
       }
     } else {
       files = {
-        [defaultMainFile]: new File(defaultMainFile, welcomeCode)
+        [defaultThemeFile]: new File('tokens.config.ts', defaultTheme),
+        [defaultMainFile]: new File(defaultMainFile, defaultComponent)
       }
     }
 
     this.defaultVueRuntimeURL = defaultVueRuntimeURL
     this.defaultVueServerRendererURL = defaultVueServerRendererURL
+    this.defaultPinceauRuntimeURL = defaultPinceauRuntimeURL
+    this.defaultPinceauURL = defaultPinceauURL
     this.initialShowOutput = showOutput
     this.initialOutputMode = outputMode as OutputModes
 
     let mainFile = defaultMainFile
-    if (!files[mainFile]) {
-      mainFile = Object.keys(files)[0]
-    }
+    if (!files[mainFile]) mainFile = Object.keys(files)[0]
     this.state = reactive({
       mainFile,
       files,
@@ -182,7 +226,7 @@ export class ReplStore implements Store {
   async setFiles(newFiles: Record<string, string>, mainFile = defaultMainFile) {
     const files: Record<string, File> = {}
     if (mainFile === defaultMainFile && !newFiles[mainFile]) {
-      files[mainFile] = new File(mainFile, welcomeCode)
+      files[mainFile] = new File(mainFile, defaultComponent)
     }
     for (const filename in newFiles) {
       files[filename] = new File(filename, newFiles[filename])
@@ -209,7 +253,9 @@ export class ReplStore implements Store {
         JSON.stringify(
           {
             imports: {
-              vue: this.defaultVueRuntimeURL
+              vue: this.defaultVueRuntimeURL,
+              pinceau: this.defaultPinceauURL,
+              'pinceau/runtime': this.defaultPinceauRuntimeURL
             }
           },
           null,
@@ -219,6 +265,20 @@ export class ReplStore implements Store {
     } else {
       try {
         const json = JSON.parse(map.code)
+
+        // Add Pinceau imports proxy
+        if (!json.imports['pinceau']) {
+          json.imports['pinceau'] = this.defaultPinceauURL
+          map.code = JSON.stringify(json, null, 2)
+        }
+
+        // Add Pinceau runtime imports proxy
+        if (!json.imports['pinceau/runtime']) {
+          json.imports['pinceau/runtime'] = this.defaultPinceauRuntimeURL
+          map.code = JSON.stringify(json, null, 2)
+        }
+
+        // Regular Vue imports
         if (!json.imports.vue) {
           json.imports.vue = this.defaultVueRuntimeURL
           map.code = JSON.stringify(json, null, 2)

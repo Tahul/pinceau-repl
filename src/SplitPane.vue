@@ -7,7 +7,7 @@ const isVertical = computed(() => props.layout === 'vertical')
 
 const container = ref()
 
-// mobile only
+// Mobile only
 const store = inject('store') as Store
 const showOutput = ref(store.initialShowOutput)
 

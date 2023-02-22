@@ -16,39 +16,22 @@ const App = {
         : `${location.origin}/src/vue-dev-proxy`,
       defaultVueServerRendererURL: import.meta.env.PROD
         ? undefined
-        : `${location.origin}/src/vue-server-renderer-dev-proxy`
+        : `${location.origin}/src/vue-server-renderer-dev-proxy`,
+      defaultPinceauRuntimeURL: import.meta.env.PROD
+        ? undefined
+        : `${location.origin}/src/pinceau-runtime-proxy`,
+      defaultPinceauURL: import.meta.env.PROD
+        ? undefined
+        : `${location.origin}/src/pinceau-proxy`
     })
 
     watchEffect(() => history.replaceState({}, '', store.serialize()))
-
-    // setTimeout(() => {
-    // store.setFiles(
-    //   {
-    //     'index.html': '<h1>yo</h1>',
-    //     'main.js': 'document.body.innerHTML = "<h1>hello</h1>"',
-    //     'foo.js': 'document.body.innerHTML = "<h1>hello</h1>"',
-    //     'bar.js': 'document.body.innerHTML = "<h1>hello</h1>"',
-    //     'baz.js': 'document.body.innerHTML = "<h1>hello</h1>"'
-    //   },
-    //   'index.html'
-    // )
-    // }, 1000);
-
-    // store.setVueVersion('3.2.8')
 
     return () =>
       h(Repl, {
         store,
         editor: MonacoEditor,
-        // layout: 'vertical',
-        ssr: true,
-        sfcOptions: {
-          script: {
-            // inlineTemplate: false
-          }
-        }
-        // showCompileOutput: false,
-        // showImportMap: false
+        ssr: false
       })
   }
 }

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import Preview from './Preview.vue'
 import { Store } from '../store'
 import { inject, ref, computed } from 'vue'
-import type { OutputModes } from './types'
+import type { ThemeOutputModes } from './types'
 import Monaco from '../monaco/Monaco.vue'
 
 const props = defineProps<{
@@ -13,14 +12,14 @@ const props = defineProps<{
 const store = inject('store') as Store
 const modes = computed(() =>
   props.showCompileOutput
-    ? (['preview', 'js', 'css', 'ssr'] as const)
-    : (['preview'] as const)
+    ? (['css', 'ts', 'utils', 'definitions', 'schema'] as const)
+    : (['css'] as const)
 )
 
-const mode = ref<OutputModes>(
+const mode = ref<ThemeOutputModes>(
   (modes.value as readonly string[]).includes(store.initialOutputMode)
-    ? store.initialOutputMode as OutputModes
-    : 'preview'
+    ? store.initialOutputMode as ThemeOutputModes
+    : 'css'
 )
 </script>
 
@@ -36,9 +35,7 @@ const mode = ref<OutputModes>(
   </div>
 
   <div class="output-container">
-    <Preview :show="mode === 'preview'" :ssr="ssr"/>
     <Monaco
-      v-if="mode !== 'preview'"
       :language="mode === 'css' ? 'css' : 'typescript'"
       :readonly="true"
       :filename="`output.${mode === 'css' ? 'css' : 'typescript' }`"
@@ -53,7 +50,6 @@ const mode = ref<OutputModes>(
   overflow: hidden;
   position: relative;
 }
-
 .tab-buttons {
   box-sizing: border-box;
   border-bottom: 1px solid var(--border);

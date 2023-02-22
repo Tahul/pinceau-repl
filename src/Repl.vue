@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import SplitPane from './SplitPane.vue'
 import Output from './output/Output.vue'
+import ThemeOutput from './output/ThemeOutput.vue'
 import { Store, ReplStore, SFCOptions } from './store'
-import { provide, toRef } from 'vue'
+import { provide, computed, toRef } from 'vue'
 import { EditorComponentType } from './types';
 import EditorContainer from './editor/EditorContainer.vue';
 import CodeMirrorEditor from './editor/CodeMirrorEditor.vue';
@@ -36,6 +37,8 @@ provide('store', props.store)
 provide('autoresize', props.autoResize)
 provide('import-map', toRef(props, 'showImportMap'))
 provide('clear-console', toRef(props, 'clearConsole'))
+
+const isTheme = computed(() => (props.store.state.activeFile.filename === 'tokens.config.ts'))
 </script>
 
 <template>
@@ -45,6 +48,11 @@ provide('clear-console', toRef(props, 'clearConsole'))
         <EditorContainer :editor-component="editor" />
       </template>
       <template #right>
+        <ThemeOutput
+          :showCompileOutput="props.showCompileOutput"
+          :ssr="!!props.ssr"
+          v-if="isTheme"
+        />
         <Output
           :showCompileOutput="props.showCompileOutput"
           :ssr="!!props.ssr"

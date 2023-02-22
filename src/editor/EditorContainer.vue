@@ -14,10 +14,7 @@ const EditorComponent = toRef(props, 'editorComponent')
 
 const store = inject('store') as Store
 
-const onChange = debounce((code: string) => {
-  store.state.activeFile.code = code
-}, 250)
-
+const onChange = debounce((code: string) => (store.state.activeFile.code = code), 250)
 </script>
 
 <template>

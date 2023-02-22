@@ -15,15 +15,21 @@ const genStub: Plugin = {
 
 export default defineConfig({
   plugins: [vue(), genStub],
+  define: {
+    'process.env': {}
+  },
   optimizeDeps: {
     include: [
-      'path-browserify',
       'onigasm'
     ],
   },
   resolve: {
     alias: {
-      path: 'path-browserify',
+      process: 'unenv/runtime/node/process/index',
+      fs: 'unenv/runtime/node/fs/index',
+      url: 'unenv/runtime/node/url/index',
+      path: 'unenv/runtime/node/path/index',
+			'source-map-js': 'node_modules/source-map-js/source-map.js',
     }
   },
   worker: {
@@ -43,7 +49,7 @@ export default defineConfig({
         'vue-repl': './src/index.ts',
         'vue-repl-monaco-editor': './src/editor/MonacoEditor.vue',
       },
-      external: ['vue', 'vue/compiler-sfc']
+      external: ['vue', 'vue/compiler-sfc', 'pinceau/runtime', 'source-map-js', 'fs']
     },
   }
 })

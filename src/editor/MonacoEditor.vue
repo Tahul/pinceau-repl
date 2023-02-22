@@ -18,18 +18,10 @@ const onChange = (code: string) => {
 
 const language = computed(() => {
   const filename = props.filename;
-  if (filename.endsWith('.vue')) {
-    return 'vue'
-  }
-  if (filename.endsWith('.html')) {
-    return 'html'
-  }
-  if (filename.endsWith('.css')) {
-    return 'css'
-  }
-  if (filename.endsWith('.ts')) {
-    return 'typescript'
-  }
+  if (filename.endsWith('.vue')) return 'vue'
+  if (filename.endsWith('.html')) return 'html'
+  if (filename.endsWith('.css')) return 'css'
+  if (filename.endsWith('.ts')) return 'typescript'
   return 'javascript'
 })
 </script>
@@ -37,6 +29,7 @@ const language = computed(() => {
 <template>
   <Monaco
     :value="value"
+    :filename="filename"
     :language="language"
     @save="onChange"
   />
