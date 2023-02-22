@@ -6,7 +6,7 @@ import { Store, ReplStore, SFCOptions } from './store'
 import { provide, computed, toRef } from 'vue'
 import { EditorComponentType } from './types';
 import EditorContainer from './editor/EditorContainer.vue';
-import CodeMirrorEditor from './editor/CodeMirrorEditor.vue';
+import MonacoEditor from './editor/MonacoEditor.vue'
 
 export interface Props {
   store?: Store
@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
   showImportMap: true,
   clearConsole: true,
   ssr: false,
-  editor: CodeMirrorEditor
+  editor: MonacoEditor
 })
 
 props.store.options = props.sfcOptions

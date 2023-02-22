@@ -8,7 +8,7 @@ prepareVirtualFiles();
 </script>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, ref, shallowRef, nextTick, watchEffect, watch, onMounted } from 'vue';
+import { onBeforeUnmount, ref, shallowRef, nextTick, watchEffect, onMounted } from 'vue';
 import * as monaco from 'monaco-editor-core';
 import { getOrCreateModel } from './utils';
 import { loadTheme } from 'monaco-volar'
@@ -35,10 +35,10 @@ const editor = shallowRef<monaco.editor.IStandaloneCodeEditor | undefined>(undef
 
 const currentModel = shallowRef<monaco.editor.ITextModel>(
   getOrCreateModel(
-      monaco.Uri.parse(`file:///${props.filename}`),
-      props.language,
-      props.value ?? ''
-    )
+    monaco.Uri.parse(`file:///${props.filename}`),
+    props.language,
+    props.value ?? ''
+  )
 )
 
 watchEffect(() => {
@@ -46,18 +46,6 @@ watchEffect(() => {
 })
 
 onBeforeUnmount(() => editor.value?.dispose());
-
-watch(
-  () => props.filename,
-  async (newFilename) => {
-    currentModel.value = getOrCreateModel(
-      monaco.Uri.parse(`file:///${newFilename}`),
-      props.language,
-      props.value ?? ''
-    )
-    await refreshEditor()
-  }
-)
 
 onMounted(async () => await refreshEditor())
 
@@ -68,32 +56,31 @@ async function refreshEditor() {
 
   if (!containerRef.value) { throw new Error("Cannot find containerRef") };
 
-  if (!editor.value) {
-    const editorInstance = monaco.editor.create(containerRef.value, {
-      theme,
-      language: props.language,
-      model: currentModel.value,
-      readOnly: props.readonly,
-      automaticLayout: true,
-      scrollBeyondLastLine: false,
-      minimap: {
-        enabled: false,
-      },
-      disableLayerHinting: true,
-      inlineSuggest: {
-        enabled: false,
-      },
-      inlayHints: {
-        enabled: 'off'
-      },
-      codeLens: false
-    });
-    editor.value = editorInstance
-    await loadGrammars(editorInstance);
+  const editorInstance = monaco.editor.create(containerRef.value, {
+    theme,
+    language: props.language,
+    model: currentModel.value,
+    readOnly: props.readonly,
+    automaticLayout: true,
+    scrollBeyondLastLine: false,
+    minimap: {
+      enabled: false,
+    },
+    disableLayerHinting: true,
+    inlineSuggest: {
+      enabled: false,
+    },
+    inlayHints: {
+      enabled: 'off'
+    },
+    codeLens: false
+  });
+
+  editor.value = editorInstance
+  await loadGrammars(editorInstance);
+  if (!props.readonly) {
     editorInstance.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => emits('save', editorInstance.getValue()));
     editorInstance.onDidChangeModelContent(() => emits('change', editorInstance.getValue()));
-  } else {
-    editor.value.setModel(currentModel.value)
   }
 }
 </script>

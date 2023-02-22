@@ -160,8 +160,6 @@ async function updatePreview() {
   runtimeError.value = null
   runtimeWarning.value = null
 
-  console.log('???')
-
   let isSSR = props.ssr
   if (store.vueVersion) {
     const [_, minor, patch] = store.vueVersion.split('.')
@@ -194,7 +192,7 @@ async function updatePreview() {
          const app = _createApp(AppComponent)
          app.config.unwrapInjectedRef = true
          app.config.warnHandler = () => {}
-         // app.use(pinceau)
+         app.use(pinceau)
          window.__ssr_promise__ = _renderToString(app).then(html => {
            document.body.innerHTML = '<div id="app">' + html + '</div>'
          }).catch(err => {

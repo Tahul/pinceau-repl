@@ -7,48 +7,57 @@ async function dispatchGrammars(scopeName: string): Promise<IGrammarDefinition> 
     case 'source.vue':
       return {
         format: 'json',
-        content: await import('./grammars/vue.tmLanguage.js'),
+        // @ts-ignore
+        content: await import('./vue.tmLanguage.js'),
       };
     case 'source.ts':
       return {
         format: 'json',
-        content: await import('./grammars/TypeScript.tmLanguage.js'),
+        // @ts-ignore
+        content: await import('./TypeScript.tmLanguage.js'),
       };
     case 'source.tsx':
       return {
         format: 'json',
-        content: await import('./grammars/TypeScriptReact.tmLanguage.js'),
+        // @ts-ignore
+        content: await import('./TypeScriptReact.tmLanguage.js'),
       };
     case 'source.js':
       return {
         format: 'json',
-        content: await import('./grammars/JavaScript.tmLanguage.js'),
+        // @ts-ignore
+        content: await import('./JavaScript.tmLanguage.js'),
       };
     case 'source.js.jsx':
     case 'source.jsx':
       return {
         format: 'json',
-        content: await import('./grammars/JavaScriptReact.tmLanguage.js'),
+        // @ts-ignore
+        content: await import('./JavaScriptReact.tmLanguage.js'),
       };
     case 'text.html.basic':
       return {
         format: 'json',
-        content: await import('./grammars/html.tmLanguage.js'),
+        // @ts-ignore
+        content: await import('./html.tmLanguage.js'),
       };
     case 'source.css':
       return {
         format: 'json',
-        content: await import('./grammars/css.tmLanguage.js'),
+        // @ts-ignore
+        content: await import('./css.tmLanguage.js'),
       };
     case 'source.stylus':
       return {
         format: 'json',
-        content: await import('./grammars/stylus.tmLanguage.js'),
+        // @ts-ignore
+        content: await import('./stylus.tmLanguage.js'),
       };
     case 'source.markdown':
       return {
         format: 'json',
-        content: await import('./grammars/markdown.tmLanguage.js'),
+        // @ts-ignore
+        content: await import('./markdown.tmLanguage.js'),
       };
     default:
       return {

@@ -9,7 +9,7 @@ import {
   babelParse
 } from 'vue/compiler-sfc'
 import { transform } from 'sucrase'
-import { transforms, defaultExport, printAst, theme, createTokensHelper } from 'pinceau/utils'
+import { transforms, defaultExport, printAst, theme, createTokensHelper, visitAst } from 'pinceau/utils'
 // @ts-ignore
 import { css as beautifyCss } from 'js-beautify'
 // Pinceau's PostCSS Plugins
@@ -46,6 +46,21 @@ export async function compileFile(
       code = await transformTS(code)
       const defineThemeNode = defaultExport(babelParse(code, { sourceType: 'module' })) as any
       const themeExpression = defineThemeNode.arguments[0]
+      // Eval utils to runtime from AST
+      let utilsCode
+      visitAst(
+        themeExpression,
+        {
+          visitObjectProperty(node) {
+            if (node?.parentPath?.parentPath?.name === 'root' && node.value.key.name === 'utils') {
+              utilsCode = node.value.value
+              return false
+            }
+            return this.traverse(node)
+          }
+        }
+      )
+      if (utilsCode) utilsCode = printAst(utilsCode).code
       code = printAst(themeExpression).code
       const _eval = eval
       _eval(`var _tokensConfig = ${code}`)
@@ -59,6 +74,8 @@ export async function compileFile(
         compiled.definitions = builtTheme.outputs?.definitions
         compiled.schema = builtTheme.outputs?.schema
         compiled.utils = builtTheme.outputs?.utils
+        compiled.tokens = builtTheme?.tokens
+        compiled.utilsCode = utilsCode || '{}'
       }
     } catch (e) {
       console.log({ e })
@@ -67,7 +84,7 @@ export async function compileFile(
   }
 
   if (filename.endsWith('.css')) {
-    compiled.css = code
+    compiled.css = beautifyCss(code)
     store.state.errors = []
     return
   }
@@ -90,9 +107,17 @@ export async function compileFile(
   }
 
   // Transform a Vue component with Pinceau transformers
+  const pinceauOutputs = store?.state?.files?.['tokens.config.ts']
+  const tokens = pinceauOutputs?.compiled?.tokens || {}
+  const $tokens = createTokensHelper(tokens, { key: 'variable' })
+  // Eval utils
+  const __eval = eval
+  __eval(`var _pinceauThemeUtils = ${pinceauOutputs?.compiled?.utilsCode || '{}'}`)
+  // @ts-ignore
+  const pinceauUtils = _pinceauThemeUtils || {}
   code = transforms.replaceStyleTs(code, filename)
   const magicString = new MagicString(code, { filename }) as any
-  const pinceauTransformed = transforms.transformVueSFC(code, { id: filename } as any, magicString, { $tokens: () => undefined, options: { runtime: true } } as any)
+  const pinceauTransformed = transforms.transformVueSFC(code, { id: filename } as any, magicString, { utils: pinceauUtils, $tokens, runtime: true, options: { runtime: true } } as any)
   const id = hashId(filename)
   const { errors, descriptor } = store.compiler.parse(pinceauTransformed?.magicString?.toString() || pinceauTransformed?.code || code, {
     filename,
@@ -248,7 +273,7 @@ export async function compileFile(
     }
   }
   if (css) {
-    compiled.css = css.trim()
+    compiled.css = beautifyCss(css.trim())
   } else {
     compiled.css = '/* No <style> tags present */'
   }

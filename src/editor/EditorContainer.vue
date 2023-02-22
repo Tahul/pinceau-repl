@@ -21,6 +21,7 @@ const onChange = debounce((code: string) => (store.state.activeFile.code = code)
   <FileSelector />
   <div class="editor-container">
     <EditorComponent
+      :key="store.state.activeFile.filename"
       @change="onChange"
       :value="store.state.activeFile.code"
       :filename="store.state.activeFile.filename"

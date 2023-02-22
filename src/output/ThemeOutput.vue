@@ -38,7 +38,8 @@ const mode = ref<ThemeOutputModes>(
     <Monaco
       :language="mode === 'css' ? 'css' : 'typescript'"
       :readonly="true"
-      :filename="`output.${mode === 'css' ? 'css' : 'typescript' }`"
+      :filename="store.state.activeFile.filename + '.' + mode"
+      :key="store.state.activeFile.filename + '.' + mode"
       :value="store.state.activeFile.compiled[mode]"
     />
   </div>

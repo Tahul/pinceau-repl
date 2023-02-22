@@ -94,7 +94,7 @@ function horizontalScroll(e: WheelEvent) {
       <span class="label">{{
         file === importMapFile ? 'Import Map' : file
       }}</span>
-      <span v-if="i > 0" class="remove" @click.stop="store.deleteFile(file)">
+      <span v-if="i > 1" class="remove" @click.stop="store.deleteFile(file)">
         <svg class="icon" width="12" height="12" viewBox="0 0 24 24">
           <line stroke="#999" x1="18" y1="6" x2="6" y2="18"></line>
           <line stroke="#999" x1="6" y1="6" x2="18" y2="18"></line>
