@@ -16,6 +16,7 @@ specifiers:
   monaco-textmate: ^3.0.1
   monaco-volar: ^0.0.8
   onigasm: ^2.2.5
+  pathe: ^1.1.0
   pinceau: latest
   postcss: ^8.4.21
   postcss-custom-properties: ^13.1.4
@@ -47,6 +48,7 @@ devDependencies:
   monaco-textmate: 3.0.1_onigasm@2.2.5
   monaco-volar: 0.0.8_iinmcxz7ozaq52s43ma67yalqe
   onigasm: 2.2.5
+  pathe: 1.1.0
   pinceau: 0.16.4_postcss@8.4.21
   postcss: 8.4.21
   postcss-custom-properties: 13.1.4_postcss@8.4.21
