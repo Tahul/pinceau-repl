@@ -48,12 +48,6 @@
     "@vitejs/plugin-vue": "^4.0.0",
     "fflate": "^0.7.4",
     "hash-sum": "^2.0.0",
-    "rimraf": "^4.1.2",
-    "sucrase": "^3.29.0",
-    "typescript": "^4.9.5",
-    "vite": "^4.1.4",
-    "vue": "^3.2.47",
-    "vue-tsc": "^1.1.7",
     "js-beautify": "^1.14.7",
     "monaco-editor": "^0.35.0",
     "monaco-editor-core": "^0.35.0",
@@ -65,10 +59,26 @@
     "postcss-custom-properties": "^13.1.4",
     "postcss-dark-theme-class": "^0.7.3",
     "postcss-nested": "^6.0.1",
+    "rimraf": "^4.1.2",
     "source-map-js": "^1.0.2",
-    "unenv": "^1.2.1"
+    "sucrase": "^3.29.0",
+    "typescript": "^4.9.5",
+    "unenv": "^1.2.1",
+    "vite": "^4.1.4",
+    "vue": "^3.2.47",
+    "vue-tsc": "^1.1.7",
+    "jiti": "^1.17.1",
+    "postcss": "^8.4.21",
+    "untyped": "^1.2.2"
   },
   "peerDependencies": {
     "vue": "^3.2.37"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "monaco-editor-core": "0.35.0"
+      }
+    }
   }
 }

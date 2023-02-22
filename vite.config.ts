@@ -29,7 +29,7 @@ export default defineConfig({
   resolve: {
     alias: {
       ...alias,
-			'source-map-js': 'node_modules/source-map-js/source-map.js',
+      'source-map-js': 'node_modules/source-map-js/source-map.js',
     }
   },
   worker: {

@@ -7,6 +7,7 @@ specifiers:
   '@vitejs/plugin-vue': ^4.0.0
   fflate: ^0.7.4
   hash-sum: ^2.0.0
+  jiti: ^1.17.1
   js-beautify: ^1.14.7
   monaco-editor: ^0.35.0
   monaco-editor-core: ^0.35.0
@@ -15,6 +16,7 @@ specifiers:
   monaco-volar: ^0.0.8
   onigasm: ^2.2.5
   pinceau: latest
+  postcss: ^8.4.21
   postcss-custom-properties: ^13.1.4
   postcss-dark-theme-class: ^0.7.3
   postcss-nested: ^6.0.1
@@ -23,6 +25,7 @@ specifiers:
   sucrase: ^3.29.0
   typescript: ^4.9.5
   unenv: ^1.2.1
+  untyped: ^1.2.2
   vite: ^4.1.4
   vue: ^3.2.47
   vue-tsc: ^1.1.7
@@ -34,6 +37,7 @@ devDependencies:
   '@vitejs/plugin-vue': 4.0.0_vite@4.1.4+vue@3.2.47
   fflate: 0.7.4
   hash-sum: 2.0.0
+  jiti: 1.17.1
   js-beautify: 1.14.7
   monaco-editor: 0.35.0
   monaco-editor-core: 0.35.0
@@ -41,15 +45,17 @@ devDependencies:
   monaco-textmate: 3.0.1_onigasm@2.2.5
   monaco-volar: 0.0.8_iinmcxz7ozaq52s43ma67yalqe
   onigasm: 2.2.5
-  pinceau: 0.16.4
-  postcss-custom-properties: 13.1.4
-  postcss-dark-theme-class: 0.7.3
-  postcss-nested: 6.0.1
+  pinceau: 0.16.4_postcss@8.4.21
+  postcss: 8.4.21
+  postcss-custom-properties: 13.1.4_postcss@8.4.21
+  postcss-dark-theme-class: 0.7.3_postcss@8.4.21
+  postcss-nested: 6.0.1_postcss@8.4.21
   rimraf: 4.1.2
   source-map-js: 1.0.2
   sucrase: 3.29.0
   typescript: 4.9.5
   unenv: 1.2.1
+  untyped: 1.2.2
   vite: 4.1.4_@types+node@18.14.0
   vue: 3.2.47
   vue-tsc: 1.1.7_typescript@4.9.5
@@ -2215,7 +2221,7 @@ packages:
     engines: {node: '>=8.6'}
     dev: true
 
-  /pinceau/0.16.4:
+  /pinceau/0.16.4_postcss@8.4.21:
     resolution: {integrity: sha512-rVJcKZpwn0AzK2+WzceRXp4el/L1pAAovi1kSbcsYDJHTyHW/gLEMcPRHvNnyQaAJ2d2bqpcCZqXx23yAwkMBw==}
     dependencies:
       '@unocss/reset': 0.49.7
@@ -2230,9 +2236,9 @@ packages:
       ohash: 1.0.0
       paneer: 0.1.0
       pathe: 1.1.0
-      postcss-custom-properties: 13.1.4
-      postcss-dark-theme-class: 0.7.3
-      postcss-nested: 6.0.1
+      postcss-custom-properties: 13.1.4_postcss@8.4.21
+      postcss-dark-theme-class: 0.7.3_postcss@8.4.21
+      postcss-nested: 6.0.1_postcss@8.4.21
       recast: 0.22.0
       scule: 1.0.0
       style-dictionary-esm: 1.3.4
@@ -2257,7 +2263,7 @@ packages:
       pathe: 1.1.0
     dev: true
 
-  /postcss-custom-properties/13.1.4:
+  /postcss-custom-properties/13.1.4_postcss@8.4.21:
     resolution: {integrity: sha512-iSAdaZrM3KMec8cOSzeTUNXPYDlhqsMJHpt62yrjwG6nAnMtRHPk5JdMzGosBJtqEahDolvD5LNbcq+EZ78o5g==}
     engines: {node: ^14 || ^16 || >=18}
     peerDependencies:
@@ -2266,22 +2272,26 @@ packages:
       '@csstools/cascade-layer-name-parser': 1.0.1_ppok7cytzjc65mcyxmtit3wdyi
       '@csstools/css-parser-algorithms': 2.0.1_5vzy4lghjvuzkedkkk4tqwjftm
       '@csstools/css-tokenizer': 2.1.0
+      postcss: 8.4.21
       postcss-value-parser: 4.2.0
     dev: true
 
-  /postcss-dark-theme-class/0.7.3:
+  /postcss-dark-theme-class/0.7.3_postcss@8.4.21:
     resolution: {integrity: sha512-M9vtfh8ORzQsVdT9BWb+xpEDAzC7nHBn7wVc988/JkEVLPupKcUnV0jw7RZ8sSj0ovpqN1POf6PLdt19JCHfhQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
       postcss: ^8.2.14
+    dependencies:
+      postcss: 8.4.21
     dev: true
 
-  /postcss-nested/6.0.1:
+  /postcss-nested/6.0.1_postcss@8.4.21:
     resolution: {integrity: sha512-mEp4xPMi5bSWiMbsgoPfcP74lsWLHkQbZc3sY+jWYd65CUwXrUaTp0fmNpa01ZcETKlIgUdFN/MpS2xZtqL9dQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
       postcss: ^8.2.14
     dependencies:
+      postcss: 8.4.21
       postcss-selector-parser: 6.0.11
     dev: true
 
