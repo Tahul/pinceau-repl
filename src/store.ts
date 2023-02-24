@@ -155,6 +155,9 @@ export class ReplStore implements Store {
               'pinceau': this.defaultPinceauURL,
               'pinceau/runtime': this.defaultPinceauRuntimeURL,
             },
+            head: [
+              '<link rel="stylesheet" href="https://unpkg.com/@unocss/reset/tailwind.css" />',
+            ],
           },
           null,
           2,
