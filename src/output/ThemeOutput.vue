@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { Store } from '../store'
+import type { Store, ThemeOutputModes } from '../types'
 import { inject, ref, computed } from 'vue'
-import type { ThemeOutputModes } from './types'
 import Monaco from '../monaco/Monaco.vue'
 
 const props = defineProps<{

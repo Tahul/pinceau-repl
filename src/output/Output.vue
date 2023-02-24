@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import Preview from './Preview.vue'
-import { Store } from '../store'
 import { inject, ref, computed } from 'vue'
-import type { OutputModes } from './types'
+import type { OutputModes, Store } from '../types'
 import Monaco from '../monaco/Monaco.vue'
 
 const props = defineProps<{

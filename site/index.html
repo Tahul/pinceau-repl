@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="description" content="Play with Pinceau in your browser.">
+    <meta name="og:title" content="Hello">
+    <meta property="og:image" content="https://pinceau.dev/social.jpg">
+    <title>Pinceau</title>
+    <script>
+      // Process shim for old versions of @vue/compiler-sfc dependency
+      window.process = { env: {} }
+      const savedPreferDark = localStorage.getItem('vue-sfc-playground-prefer-dark')
+      if (savedPreferDark === 'true' || (!savedPreferDark && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark')
+      }
+    </script>
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>

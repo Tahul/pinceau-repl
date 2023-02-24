@@ -18,5 +18,5 @@
     "jsx": "preserve",
     "rootDir": "."
   },
-  "include": ["src", "test", "vite.config.ts"]
+  "include": ["src", "test", "site", "vite.config.ts"]
 }

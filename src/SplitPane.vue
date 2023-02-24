@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, computed, inject } from 'vue'
-import { Store } from './store'
+import { computed, inject, reactive, ref } from 'vue'
+import type { Store } from './types'
 
 const props = defineProps<{ layout?: string }>()
 const isVertical = computed(() => props.layout === 'vertical')
@@ -13,13 +13,13 @@ const showOutput = ref(store.initialShowOutput)
 
 const state = reactive({
   dragging: false,
-  split: 50
+  split: 50,
 })
 
-const boundSplit = computed(()=>{
+const boundSplit = computed(() => {
   const { split } = state
   return split < 20 ? 20 : split > 80 ? 80 : split
-}) 
+})
 
 let startPosition = 0
 let startSplit = 0
@@ -51,9 +51,9 @@ function dragEnd() {
     ref="container"
     class="split-pane"
     :class="{
-      dragging: state.dragging,
+      'dragging': state.dragging,
       'show-output': showOutput,
-      vertical: isVertical
+      'vertical': isVertical,
     }"
     @mousemove="dragMove"
     @mouseup="dragEnd"
@@ -61,14 +61,14 @@ function dragEnd() {
   >
     <div
       class="left"
-      :style="{ [isVertical ? 'height' : 'width']: boundSplit + '%' }"
+      :style="{ [isVertical ? 'height' : 'width']: `${boundSplit}%` }"
     >
       <slot name="left" />
       <div class="dragger" @mousedown.prevent="dragStart" />
     </div>
     <div
       class="right"
-      :style="{ [isVertical ? 'height' : 'width']: 100 - boundSplit + '%' }"
+      :style="{ [isVertical ? 'height' : 'width']: `${100 - boundSplit}%` }"
     >
       <slot name="right" />
     </div>

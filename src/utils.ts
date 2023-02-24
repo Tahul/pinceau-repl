@@ -1,9 +1,9 @@
-import { zlibSync, unzlibSync, strToU8, strFromU8 } from 'fflate'
+import { strFromU8, strToU8, unzlibSync, zlibSync } from 'fflate'
 
 export function debounce(fn: Function, n = 100) {
   let handle: any
   return (...args: any[]) => {
-    if (handle) clearTimeout(handle)
+    if (handle) { clearTimeout(handle) }
     handle = setTimeout(() => {
       fn(...args)
     }, n)

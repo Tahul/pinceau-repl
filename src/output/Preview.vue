@@ -13,7 +13,7 @@ import {
 import srcdoc from './srcdoc.html?raw'
 import { PreviewProxy } from './PreviewProxy'
 import { compileModulesForPreview } from './moduleCompiler'
-import { Store } from '../store'
+import type { Store } from '../types'
 
 const props = defineProps<{ show: boolean; ssr: boolean }>()
 
@@ -79,16 +79,29 @@ function createSandbox() {
   )
 
   const importMap = store.getImportMap()
-  if (!importMap.imports) {
-    importMap.imports = {}
-  }
-  if (!importMap.imports.vue) {
-    importMap.imports.vue = store.state.vueRuntimeURL
-  }
-  const sandboxSrc = srcdoc.replace(
+  if (!importMap.imports) importMap.imports = {}
+  if (!importMap.imports.vue) importMap.imports.vue = store.state.vueRuntimeURL
+  if (!importMap.imports.pinceauRuntime) importMap.imports['pinceau/runtime'] = store.state.pinceauRuntimeURL
+  if (!importMap.imports.pinceauUtils) importMap.imports['pinceau/utils'] = store.state.pinceauUtilsURL
+
+  // Support import map in srcDoc
+  let sandboxSrc = srcdoc.replace(
     /<!--IMPORT_MAP-->/,
     JSON.stringify(importMap)
   )
+
+  // Support head scripts from import map and store.head
+  let headScripts = []
+  if (importMap?.head?.length || store?.state?.head?.length) {
+    const importMapScripts = importMap?.head || []
+    const storeScripts = store.state?.head || []
+    headScripts = Array.from(new Set([...importMapScripts, ...storeScripts]))
+  }
+  sandboxSrc = sandboxSrc.replace(
+    /<!--HEAD_MAP-->/,
+    headScripts.join('\n') || ''
+  )
+
   sandbox.srcdoc = sandboxSrc
   container.value.appendChild(sandbox)
 
@@ -154,9 +167,7 @@ function createSandbox() {
 }
 
 async function updatePreview() {
-  if (import.meta.env.PROD && clearConsole.value) {
-    console.clear()
-  }
+  if (import.meta.env.PROD && clearConsole.value) console.clear()
   runtimeError.value = null
   runtimeWarning.value = null
 
@@ -166,7 +177,7 @@ async function updatePreview() {
     if (parseInt(minor, 10) < 2 || parseInt(patch, 10) < 27) {
       alert(
         `The selected version of Vue (${store.vueVersion}) does not support in-browser SSR.` +
-          ` Rendering in client mode instead.`
+        ` Rendering in client mode instead.`
       )
       isSSR = false
     }
@@ -205,15 +216,14 @@ async function updatePreview() {
     // compile code to simulated module system
     const modules = compileModulesForPreview(store)
     console.log(
-      `[@vue/repl] successfully compiled ${modules.length} module${
-        modules.length > 1 ? `s` : ``
+      `[@vue/repl] successfully compiled ${modules.length} module${modules.length > 1 ? `s` : ``
       }.`
     )
 
     const codeToEval = [
       `window.__modules__ = {}\nwindow.__css__ = ''\n` +
-        `if (window.__app__) window.__app__.unmount()\n` +
-        (isSSR ? `` : `document.body.innerHTML = '<div id="app"></div>'`),
+      `if (window.__app__) window.__app__.unmount()\n` +
+      (isSSR ? `` : `document.body.innerHTML = '<div id="app"></div>'`),
       ...modules,
       `document.getElementById('__sfc-styles').innerHTML = window.__css__`
     ]

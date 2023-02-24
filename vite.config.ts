@@ -1,4 +1,5 @@
-import { defineConfig, Plugin } from 'vite'
+import type { Plugin } from 'vite'
+import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { env, node, nodeless } from 'unenv'
 
@@ -11,29 +12,30 @@ const genStub: Plugin = {
     this.emitFile({
       type: 'asset',
       fileName: 'ssr-stub.js',
-      source: `module.exports = {}`
+      source: 'module.exports = {}',
     })
-  }
+  },
 }
 
 export default defineConfig({
   plugins: [vue(), genStub],
   define: {
-    'process.env': {}
+    'process.env': {},
   },
   optimizeDeps: {
     include: [
-      'onigasm'
+      'onigasm',
+      'vscode-uri',
     ],
   },
   resolve: {
     alias: {
       ...alias,
       'source-map-js': 'node_modules/source-map-js/source-map.js',
-    }
+    },
   },
   worker: {
-    format: 'es'
+    format: 'es',
   },
   build: {
     target: 'esnext',
@@ -41,15 +43,15 @@ export default defineConfig({
     lib: {
       entry: './src/index.ts',
       formats: ['es'],
-      fileName: () => '[name].js'
+      fileName: () => '[name].js',
     },
-    
+
     rollupOptions: {
       input: {
         'pinceau-repl': './src/index.ts',
         'pinceau-repl-monaco-editor': './src/editor/MonacoEditor.vue',
       },
-      external: ['vue', 'vue/compiler-sfc', 'pinceau/runtime', 'source-map-js', 'fs', 'jiti', 'pinceau']
+      external: ['vue', 'vue/compiler-sfc', 'pinceau/runtime', 'source-map-js', 'fs', 'jiti', 'pinceau'],
     },
-  }
+  },
 })

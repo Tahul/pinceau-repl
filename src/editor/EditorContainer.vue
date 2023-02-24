@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import FileSelector from './FileSelector.vue'
+import { inject, toRef } from 'vue'
 import Message from '../Message.vue'
 import { debounce } from '../utils'
-import { inject, toRef } from 'vue'
-import { Store } from '../store'
-import { EditorComponentType } from '../types'
+import type { Store } from '../store'
+import type { EditorComponentType } from '../types'
+import FileSelector from './FileSelector.vue'
 
 const props = defineProps<{
-    editorComponent: EditorComponentType
+  editorComponent: EditorComponentType
 }>()
 
 const EditorComponent = toRef(props, 'editorComponent')
@@ -22,9 +22,9 @@ const onChange = debounce((code: string) => (store.state.activeFile.code = code)
   <div class="editor-container">
     <EditorComponent
       :key="store.state.activeFile.filename"
-      @change="onChange"
       :value="store.state.activeFile.code"
       :filename="store.state.activeFile.filename"
+      @change="onChange"
     />
     <Message :err="store.state.errors[0]" />
   </div>

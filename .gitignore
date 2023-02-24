@@ -5,3 +5,6 @@ TODOs.md
 
 # jetbrains files
 .idea
+
+# Optional eslint cache
+.eslintcache

@@ -1,39 +1,44 @@
-import { Store, File } from './store'
-import {
-  SFCDescriptor,
+import type {
   BindingMetadata,
+  CompilerOptions,
+  SFCDescriptor,
+} from 'vue/compiler-sfc'
+import {
+  MagicString,
+  babelParse,
   shouldTransformRef,
   transformRef,
-  CompilerOptions,
-  MagicString,
-  babelParse
 } from 'vue/compiler-sfc'
 import { transform } from 'sucrase'
-import { transforms, defaultExport, printAst, theme, createTokensHelper, visitAst } from 'pinceau/utils'
-// @ts-ignore
-import { css as beautifyCss } from 'js-beautify'
-// Pinceau's PostCSS Plugins
-// @ts-ignore
-import PostCSSCustomProperties from 'postcss-custom-properties'
-// @ts-ignore
-import PostCSSNested from 'postcss-nested'
-// @ts-ignore
-import PostCSSDarkThemeClass from 'postcss-dark-theme-class'
+import { createTokensHelper, defaultExport, printAst, theme, transforms, visitAst } from 'pinceau/utils'
 // @ts-ignore
 import hashId from 'hash-sum'
 
-export const COMP_IDENTIFIER = `__sfc__`
+// CSS Beautifier
+// @ts-ignore
+import { css as beautifyCss } from 'js-beautify'
+
+// Pinceau's PostCSS Plugins
+// @ts-ignore
+import PostCSSCustomProperties from 'postcss-custom-properties'
+// @ts-ignor
+import PostCSSNested from 'postcss-nested'
+// @ts-ignore
+import PostCSSDarkThemeClass from 'postcss-dark-theme-class'
+import type { Store } from './types'
+import type { File } from './file'
+
+export const COMP_IDENTIFIER = '__sfc__'
 
 async function transformTS(src: string) {
   return transform(src, {
-    transforms: ['typescript']
+    transforms: ['typescript'],
   }).code
 }
 
-
 export async function compileFile(
   store: Store,
-  { filename, code, compiled }: File
+  { filename, code, compiled }: File,
 ) {
   if (!code.trim()) {
     store.state.errors = []
@@ -57,11 +62,12 @@ export async function compileFile(
               return false
             }
             return this.traverse(node)
-          }
-        }
+          },
+        },
       )
-      if (utilsCode) utilsCode = printAst(utilsCode).code
+      if (utilsCode) { utilsCode = printAst(utilsCode).code }
       code = printAst(themeExpression).code
+      // eslint-disable-next-line no-eval
       const _eval = eval
       _eval(`var _tokensConfig = ${code}`)
       // @ts-ignore
@@ -77,7 +83,8 @@ export async function compileFile(
         compiled.tokens = builtTheme?.tokens
         compiled.utilsCode = utilsCode || '{}'
       }
-    } catch (e) {
+    }
+    catch (e) {
       console.log({ e })
     }
     return
@@ -111,6 +118,7 @@ export async function compileFile(
   const tokens = pinceauOutputs?.compiled?.tokens || {}
   const $tokens = createTokensHelper(tokens, { key: 'variable' })
   // Eval utils
+  // eslint-disable-next-line no-eval
   const __eval = eval
   __eval(`var _pinceauThemeUtils = ${pinceauOutputs?.compiled?.utilsCode || '{}'}`)
   // @ts-ignore
@@ -121,32 +129,31 @@ export async function compileFile(
   const id = hashId(filename)
   const { errors, descriptor } = store.compiler.parse(pinceauTransformed?.magicString?.toString() || pinceauTransformed?.code || code, {
     filename,
-    sourceMap: true
+    sourceMap: true,
   })
   if (errors.length) {
     store.state.errors = errors
     return
   }
 
-
   if (
-    descriptor.styles.some((s) => !['postcss', 'ts'].includes(s?.lang || '')) ||
-    (descriptor.template && descriptor.template.lang)
+    descriptor.styles.some(s => !['postcss', 'ts'].includes(s?.lang || ''))
+    || (descriptor.template && descriptor.template.lang)
   ) {
-    store.state.errors = [`Only lang="ts" or lang="postcss" is supported for <style> blocks.`]
+    store.state.errors = ['Only lang="ts" or lang="postcss" is supported for <style> blocks.']
     return
   }
 
-  const scriptLang =
-    (descriptor.script && descriptor.script.lang) ||
-    (descriptor.scriptSetup && descriptor.scriptSetup.lang)
+  const scriptLang
+    = (descriptor.script && descriptor.script.lang)
+    || (descriptor.scriptSetup && descriptor.scriptSetup.lang)
   const isTS = scriptLang === 'ts'
   if (scriptLang && !isTS) {
-    store.state.errors = [`Only lang="ts" is supported for <script> blocks.`]
+    store.state.errors = ['Only lang="ts" is supported for <script> blocks.']
     return
   }
 
-  const hasScoped = descriptor.styles.some((s) => s.scoped)
+  const hasScoped = descriptor.styles.some(s => s.scoped)
   let clientCode = ''
   let ssrCode = ''
 
@@ -160,7 +167,7 @@ export async function compileFile(
     descriptor,
     id,
     false,
-    isTS
+    isTS,
   )
   if (!clientScriptResult) {
     return
@@ -176,14 +183,16 @@ export async function compileFile(
       descriptor,
       id,
       true,
-      isTS
+      isTS,
     )
     if (ssrScriptResult) {
       ssrCode += ssrScriptResult[0]
-    } else {
+    }
+    else {
       ssrCode = `/* SSR compile error: ${store.state.errors[0]} */`
     }
-  } else {
+  }
+  else {
     // when no <script setup> is used, the script result will be identical.
     ssrCode += clientScript
   }
@@ -191,8 +200,8 @@ export async function compileFile(
   // template
   // only need dedicated compilation if not using <script setup>
   if (
-    descriptor.template &&
-    (!descriptor.scriptSetup || store.options?.script?.inlineTemplate === false)
+    descriptor.template
+    && (!descriptor.scriptSetup || store.options?.script?.inlineTemplate === false)
   ) {
     const clientTemplateResult = await doCompileTemplate(
       store,
@@ -200,7 +209,7 @@ export async function compileFile(
       id,
       bindings,
       false,
-      isTS
+      isTS,
     )
     if (!clientTemplateResult) {
       return
@@ -213,26 +222,27 @@ export async function compileFile(
       id,
       bindings,
       true,
-      isTS
+      isTS,
     )
     if (ssrTemplateResult) {
       // ssr compile failure is fine
       ssrCode += ssrTemplateResult
-    } else {
+    }
+    else {
       ssrCode = `/* SSR compile error: ${store.state.errors[0]} */`
     }
   }
 
   if (hasScoped) {
     appendSharedCode(
-      `\n${COMP_IDENTIFIER}.__scopeId = ${JSON.stringify(`data-v-${id}`)}`
+      `\n${COMP_IDENTIFIER}.__scopeId = ${JSON.stringify(`data-v-${id}`)}`,
     )
   }
 
   if (clientCode || ssrCode) {
     appendSharedCode(
-      `\n${COMP_IDENTIFIER}.__file = ${JSON.stringify(filename)}` +
-      `\nexport default ${COMP_IDENTIFIER}`
+      `\n${COMP_IDENTIFIER}.__file = ${JSON.stringify(filename)}`
+      + `\nexport default ${COMP_IDENTIFIER}`,
     )
     compiled.js = clientCode.trimStart()
     compiled.ssr = ssrCode.trimStart()
@@ -243,7 +253,7 @@ export async function compileFile(
   for (const style of descriptor.styles) {
     if (style.module) {
       store.state.errors = [
-        `<style module> is not supported in the playground.`
+        '<style module> is not supported in the playground.',
       ]
       return
     }
@@ -257,7 +267,7 @@ export async function compileFile(
       postcssPlugins: [
         PostCSSCustomProperties,
         PostCSSDarkThemeClass,
-        PostCSSNested
+        PostCSSNested,
       ],
     })
 
@@ -268,13 +278,15 @@ export async function compileFile(
         store.state.errors = styleResult.errors
       }
       // proceed even if css compile errors
-    } else {
-      css += styleResult.code + '\n'
+    }
+    else {
+      css += `${styleResult.code}\n`
     }
   }
   if (css) {
     compiled.css = beautifyCss(css.trim())
-  } else {
+  }
+  else {
     compiled.css = '/* No <style> tags present */'
   }
 
@@ -287,7 +299,7 @@ async function doCompileScript(
   descriptor: SFCDescriptor,
   id: string,
   ssr: boolean,
-  isTS: boolean
+  isTS: boolean,
 ): Promise<[string, BindingMetadata | undefined] | undefined> {
   if (descriptor.script || descriptor.scriptSetup) {
     try {
@@ -304,36 +316,37 @@ async function doCompileScript(
           ssrCssVars: descriptor.cssVars,
           compilerOptions: {
             ...store.options?.template?.compilerOptions,
-            expressionPlugins
-          }
-        }
+            expressionPlugins,
+          },
+        },
       })
       let code = ''
       if (compiledScript.bindings) {
         code += `\n/* Analyzed bindings: ${JSON.stringify(
           compiledScript.bindings,
           null,
-          2
+          2,
         )} */`
       }
-      code +=
-        `\n` +
-        store.compiler.rewriteDefault(
+      code
+        += `\n${
+         store.compiler.rewriteDefault(
           compiledScript.content,
           COMP_IDENTIFIER,
-          expressionPlugins
-        )
+          expressionPlugins,
+        )}`
 
       if ((descriptor.script || descriptor.scriptSetup)!.lang === 'ts') {
         code = await transformTS(code)
       }
 
       return [code, compiledScript.bindings]
-    } catch (e: any) {
-      store.state.errors = [e.stack.split('\n').slice(0, 12).join('\n')]
-      return
     }
-  } else {
+    catch (e: any) {
+      store.state.errors = [e.stack.split('\n').slice(0, 12).join('\n')]
+    }
+  }
+  else {
     return [`\nconst ${COMP_IDENTIFIER} = {}`, undefined]
   }
 }
@@ -344,14 +357,14 @@ async function doCompileTemplate(
   id: string,
   bindingMetadata: BindingMetadata | undefined,
   ssr: boolean,
-  isTS: boolean
+  isTS: boolean,
 ) {
   const templateResult = store.compiler.compileTemplate({
     ...store.options?.template,
     source: descriptor.template!.content,
     filename: descriptor.filename,
     id,
-    scoped: descriptor.styles.some((s) => s.scoped),
+    scoped: descriptor.styles.some(s => s.scoped),
     slotted: descriptor.slotted,
     ssr,
     ssrCssVars: descriptor.cssVars,
@@ -359,20 +372,20 @@ async function doCompileTemplate(
     compilerOptions: {
       ...store.options?.template?.compilerOptions,
       bindingMetadata,
-      expressionPlugins: isTS ? ['typescript'] : undefined
-    }
+      expressionPlugins: isTS ? ['typescript'] : undefined,
+    },
   })
   if (templateResult.errors.length) {
     store.state.errors = templateResult.errors
     return
   }
 
-  const fnName = ssr ? `ssrRender` : `render`
+  const fnName = ssr ? 'ssrRender' : 'render'
 
-  let code =
-    `\n${templateResult.code.replace(
+  let code
+    = `\n${templateResult.code.replace(
       /\nexport (function|const) (render|ssrRender)/,
-      `$1 ${fnName}`
+      `$1 ${fnName}`,
     )}` + `\n${COMP_IDENTIFIER}.${fnName} = ${fnName}`
 
   if ((descriptor.script || descriptor.scriptSetup)?.lang === 'ts') {

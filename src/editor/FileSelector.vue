@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Store } from '../store'
-import { computed, inject, ref, VNode, Ref } from 'vue'
+import type { Ref, VNode } from 'vue'
+import { computed, inject, ref } from 'vue'
+import type { Store } from '../types'
 
 const store = inject('store') as Store
 
@@ -11,12 +12,12 @@ const showImportMap = inject('import-map') as Ref<boolean>
 const files = computed(() =>
   Object.entries(store.state.files)
     .filter(([name, file]) => name !== importMapFile && !file.hidden)
-    .map(([name]) => name)
+    .map(([name]) => name),
 )
 
 function startAddFile() {
   let i = 0
-  let name = `Comp.vue`
+  let name = 'Comp.vue'
 
   while (true) {
     let hasConflict = false
@@ -41,16 +42,16 @@ function cancelAddFile() {
 }
 
 function focus({ el }: VNode) {
-  ;(el as HTMLInputElement).focus()
+  (el as HTMLInputElement).focus()
 }
 
 function doneAddFile() {
-  if (!pending.value) return
+  if (!pending.value) { return }
   const filename = pendingFilename.value
 
   if (!/\.(vue|js|ts|css)$/.test(filename)) {
     store.state.errors = [
-      `Playground only supports *.vue, *.js, *.ts, *.css files.`
+      'Playground only supports *.vue, *.js, *.ts, *.css files.',
     ]
     return
   }
@@ -69,24 +70,25 @@ const fileSel = ref(null)
 function horizontalScroll(e: WheelEvent) {
   e.preventDefault()
   const el = fileSel.value! as HTMLElement
-  const direction =
-    Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY
+  const direction
+    = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY
   const distance = 30 * (direction > 0 ? 1 : -1)
   el.scrollTo({
-    left: el.scrollLeft + distance
+    left: el.scrollLeft + distance,
   })
 }
 </script>
 
 <template>
   <div
+    ref="fileSel"
     class="file-selector"
     :class="{ 'has-import-map': showImportMap }"
     @wheel="horizontalScroll"
-    ref="fileSel"
   >
     <div
       v-for="(file, i) in files"
+      :key="i"
       class="file"
       :class="{ active: store.state.activeFile.filename === file }"
       @click="store.setActive(file)"
@@ -96,8 +98,8 @@ function horizontalScroll(e: WheelEvent) {
       }}</span>
       <span v-if="i > 1" class="remove" @click.stop="store.deleteFile(file)">
         <svg class="icon" width="12" height="12" viewBox="0 0 24 24">
-          <line stroke="#999" x1="18" y1="6" x2="6" y2="18"></line>
-          <line stroke="#999" x1="6" y1="6" x2="18" y2="18"></line>
+          <line stroke="#999" x1="18" y1="6" x2="6" y2="18" />
+          <line stroke="#999" x1="6" y1="6" x2="18" y2="18" />
         </svg>
       </span>
     </div>
@@ -109,9 +111,11 @@ function horizontalScroll(e: WheelEvent) {
         @keyup.enter="doneAddFile"
         @keyup.esc="cancelAddFile"
         @vnodeMounted="focus"
-      />
+      >
     </div>
-    <button class="add" @click="startAddFile">+</button>
+    <button class="add" @click="startAddFile">
+      +
+    </button>
 
     <div v-if="showImportMap" class="import-map-wrapper">
       <div

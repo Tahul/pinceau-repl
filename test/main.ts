@@ -20,9 +20,12 @@ const App = {
       defaultPinceauRuntimeURL: import.meta.env.PROD
         ? undefined
         : `${location.origin}/src/pinceau-runtime-proxy`,
+      defaultPinceauUtilsURL: import.meta.env.PROD
+        ? undefined
+        : `${location.origin}/src/pinceau-utils-proxy`,
       defaultPinceauURL: import.meta.env.PROD
         ? undefined
-        : `${location.origin}/src/pinceau-proxy`
+        : `${location.origin}/src/pinceau-proxy`,
     })
 
     watchEffect(() => history.replaceState({}, '', store.serialize()))
@@ -31,9 +34,9 @@ const App = {
       h(Repl, {
         store,
         editor: MonacoEditor,
-        ssr: false
+        ssr: false,
       })
-  }
+  },
 }
 
 createApp(App).mount('#app')

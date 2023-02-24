@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { computed, provide, toRef } from 'vue'
 import SplitPane from './SplitPane.vue'
 import Output from './output/Output.vue'
 import ThemeOutput from './output/ThemeOutput.vue'
-import { Store, ReplStore, SFCOptions } from './store'
-import { provide, computed, toRef } from 'vue'
-import { EditorComponentType } from './types';
-import EditorContainer from './editor/EditorContainer.vue';
+import { ReplStore } from './store'
+import type { EditorComponentType, SFCOptions, Store } from './types'
+import EditorContainer from './editor/EditorContainer.vue'
 import MonacoEditor from './editor/MonacoEditor.vue'
 
 export interface Props {
@@ -27,9 +27,10 @@ const props = withDefaults(defineProps<Props>(), {
   showImportMap: true,
   clearConsole: true,
   ssr: false,
-  editor: MonacoEditor
+  editor: MonacoEditor,
 })
 
+// eslint-disable-next-line vue/no-mutating-props
 props.store.options = props.sfcOptions
 props.store.init()
 
@@ -49,12 +50,12 @@ const isTheme = computed(() => (props.store.state.activeFile.filename === 'token
       </template>
       <template #right>
         <ThemeOutput
-          :showCompileOutput="props.showCompileOutput"
-          :ssr="!!props.ssr"
           v-if="isTheme"
+          :show-compile-output="props.showCompileOutput"
+          :ssr="!!props.ssr"
         />
         <Output
-          :showCompileOutput="props.showCompileOutput"
+          :show-compile-output="props.showCompileOutput"
           :ssr="!!props.ssr"
         />
       </template>
