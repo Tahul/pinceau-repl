@@ -1,30 +1,61 @@
-import EditorWorker from 'monaco-editor-core/esm/vs/editor/editor.worker?worker'
-import VueWorker from 'monaco-volar/vue.worker?worker'
-import JSONWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
-import CSSWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
-import HTMLWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
-import TSWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import * as onigasm from 'onigasm'
 import onigasmWasm from 'onigasm/lib/onigasm.wasm?url'
+import EditorWorker from 'monaco-editor-core/esm/vs/editor/editor.worker?worker'
+import type { LanguageService } from '@volar/vue-language-service'
+import { editor, languages } from 'monaco-editor-core'
+import * as volar from '@volar/monaco'
+import { MyWorkerContextHost } from './host'
+import VueWorker from './vue.worker?worker'
 
-// Avoid HMR breakings
-let onigasmReady = false
-export function loadWasm() {
-  if (onigasmReady) { return }
-  const wasmImport = onigasm.loadWASM(onigasmWasm)
-  onigasmReady = true
-  return wasmImport
+export function loadOnigasm() {
+  return onigasm.loadWASM(onigasmWasm)
 }
 
-export function loadMonacoEnv() {
-  (self as any).MonacoEnvironment = {
-    async getWorker(_: any, label: string) {
+export function setupMonacoEnv(takeoverMode = false) {
+  let initialized = false
+
+  languages.register({ id: 'vue', extensions: ['.vue'] })
+  languages.onLanguage('vue', setup)
+
+  if (takeoverMode) {
+    languages.onLanguage('javascript', setup)
+    languages.onLanguage('typescript', setup)
+    languages.onLanguage('javascriptreact', setup)
+    languages.onLanguage('typescriptreact', setup)
+    languages.onLanguage('json', setup)
+  }
+
+  async function setup() {
+    if (initialized) { return }
+    initialized = true
+
+    ;(self as any).MonacoEnvironment ??= {}
+    ;(self as any).MonacoEnvironment.getWorker ??= () => new EditorWorker()
+
+    const getWorker = (self as any).MonacoEnvironment.getWorker
+
+    ;(self as any).MonacoEnvironment.getWorker = (_: any, label: string) => {
       if (label === 'vue') { return new VueWorker() }
-      if (label === 'json') { return new JSONWorker() }
-      if (label === 'css' || label === 'scss' || label === 'less') { return new CSSWorker() }
-      if (label === 'html') { return new HTMLWorker() }
-      if (label === 'typescript' || label === 'javascript') { return new TSWorker() }
-      return new EditorWorker()
-    },
+      return getWorker()
+    }
+
+    const worker = editor.createWebWorker<LanguageService>({
+      moduleId: 'vs/language/vue/vueWorker',
+      label: 'vue',
+      createData: {},
+      host: new MyWorkerContextHost(),
+    })
+    const languageId = takeoverMode
+      ? [
+          'vue',
+          'javascript',
+          'typescript',
+          'javascriptreact',
+          'typescriptreact',
+          'json',
+        ]
+      : ['vue']
+    volar.editor.activateMarkers(worker, languageId, 'vue', editor)
+    await volar.languages.registerProvides(worker, languageId, languages)
   }
 }

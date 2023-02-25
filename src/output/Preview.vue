@@ -102,6 +102,20 @@ function createSandbox() {
     headScripts.join('\n') || ''
   )
 
+  // Support Pinceau theme injection
+  sandboxSrc = sandboxSrc.replace(
+    /<!--PINCEAU_THEME-->/,
+    `<style id="pinceau-theme">${store?.state?.files?.['tokens.config.ts']?.compiled?.css}</style>`
+  )
+
+  // Enable Pinceau SSR sheet
+  if (props.ssr) {
+    sandboxSrc = sandboxSrc.replace(
+      /<!--PINCEAU_SSR-->/,
+      `<style id="pinceau-runtime-hydratable"></style>`
+    )
+  }
+
   sandbox.srcdoc = sandboxSrc
   container.value.appendChild(sandbox)
 
@@ -189,9 +203,7 @@ async function updatePreview() {
     // if SSR, generate the SSR bundle and eval it to render the HTML
     if (isSSR && mainFile.endsWith('.vue')) {
       const ssrModules = compileModulesForPreview(store, true)
-      console.log(
-        `[@vue/repl] successfully compiled ${ssrModules.length} modules for SSR.`
-      )
+      console.log(`[@vue/repl] successfully compiled ${ssrModules.length} modules for SSR.`)
       await proxy.eval([
         `const __modules__ = {};`,
         ...ssrModules,
@@ -205,7 +217,14 @@ async function updatePreview() {
          app.config.warnHandler = () => {}
          app.use(pinceau)
          window.__ssr_promise__ = _renderToString(app).then(html => {
-           document.body.innerHTML = '<div id="app">' + html + '</div>'
+          document.body.innerHTML = '<div id="app">' + html + '</div>'
+          const pinceauHydratableCss = app.config.globalProperties.$pinceauSsr.get()
+          const styleNode = document.createElement('style')
+          styleNode.id = 'pinceau-runtime-hydratable'
+          styleNode.type = 'text/css'
+          document.head.appendChild(styleNode)
+          styleNode.innerHTML = pinceauHydratableCss
+          console.log({styleNode, pinceauHydratableCss})
          }).catch(err => {
            console.error("SSR Error", err)
          })
@@ -225,7 +244,10 @@ async function updatePreview() {
       `if (window.__app__) window.__app__.unmount()\n` +
       (isSSR ? `` : `document.body.innerHTML = '<div id="app"></div>'`),
       ...modules,
-      `document.getElementById('__sfc-styles').innerHTML = window.__css__`
+      `document.getElementById('__sfc-styles').innerHTML = window.__css__`,
+      `document.getElementById('pinceau-theme').innerHTML = \`${store.state.files['tokens.config.ts'].compiled.css}\``,
+      // Cleanup SSR sheet
+      (isSSR ? `const runtimeSheet = document.getElementById('pinceau-runtime')\nruntimeSheet.id = 'pinceau-runtime-hydratable'\nruntimeSheet.innerHTML = ''` : ``),
     ]
 
     // if main file is a vue file, mount it.

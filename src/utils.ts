@@ -18,7 +18,12 @@ export function utoa(data: string): string {
 }
 
 export function atou(base64: string): string {
-  const binary = atob(base64)
+  // Try to resolve base64
+  let binary
+  try { binary = atob(base64) }
+  catch (e) { }
+
+  if (!binary) { return '' }
 
   // zlib header (x78), level 9 (xDA)
   if (binary.startsWith('\x78\xDA')) {

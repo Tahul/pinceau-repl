@@ -1,14 +1,14 @@
 <script lang="ts">
-import { loadTheme, prepareVirtualFiles } from 'monaco-volar'
+import { loadGrammars, loadTheme } from 'monaco-volar'
+import { loadOnigasm, setupMonacoEnv } from './env'
+await loadOnigasm()
+setupMonacoEnv(true)
 </script>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watchEffect } from 'vue'
 import * as monaco from 'monaco-editor-core'
 import { getOrCreateModel } from './utils'
-import { loadMonacoEnv, loadWasm } from './env'
-import { loadGrammars } from './grammars'
-
 const props = withDefaults(defineProps<{
   value?: string
   filename?: string
@@ -22,9 +22,6 @@ const emits = defineEmits<{
   (e: 'change', value: string): void
   (e: 'save', value: string): void
 }>()
-loadMonacoEnv()
-loadWasm()
-prepareVirtualFiles()
 
 const containerRef = ref<HTMLDivElement | null>()
 const ready = ref(false)
@@ -38,9 +35,7 @@ const currentModel = shallowRef<monaco.editor.ITextModel>(
   ),
 )
 
-watchEffect(() => {
-  if (currentModel?.value?.getValue() !== props.value) { currentModel?.value?.setValue(props.value) }
-})
+watchEffect(() => (currentModel?.value?.getValue() !== props.value) && currentModel?.value?.setValue(props.value))
 
 onBeforeUnmount(() => editor.value?.dispose())
 
@@ -74,7 +69,8 @@ async function refreshEditor() {
   })
 
   editor.value = editorInstance
-  await loadGrammars(editorInstance)
+
+  loadGrammars(editorInstance)
 
   if (!props.readonly) {
     editorInstance.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => emits('save', editorInstance.getValue()))

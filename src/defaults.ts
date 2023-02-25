@@ -12,8 +12,7 @@ export default defineTheme({
   },
 
   font: {
-    primary: 'Inter, sans-serif',
-    secondary: 'PaytoneOne, serif',
+    primary: 'Supreme, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'
   },
 
   color: {
@@ -293,7 +292,7 @@ import MyButton from './MyButton.vue'
 </script>
 
 <template>
-    <MyButton color="primary" size="md">Hello World!</MyButton>
+    <MyButton color="primary">Hello World!</MyButton>
 </template>`.trim()
 
 export const defaultComponentFile = 'MyButton.vue'
@@ -327,7 +326,7 @@ css({
         boxShadow: \`0 5px 0 {button.primary}, 0 12px 16px {color.dimmed}\`,
         span: {
             display: 'inline-block',
-            fontFamily: '{typography.font.display}',
+            fontFamily: '{font.primary}',
             borderRadius: '{radii.lg}',
             fontSize: '{fontSize.xl}',
             lineHeight: '{lead.none}',
@@ -364,7 +363,7 @@ css({
                 },
             },
             options: {
-                default: 'sm',
+                default: { initial: 'sm', md: 'md', lg: 'lg' },
             },
         },
     },

@@ -26,14 +26,6 @@ export function compileModulesForPreview(store: Store, isSSR = false) {
   if (!isSSR) {
     // also add css files that are not imported
     for (const filename in store.state.files) {
-      if (filename === 'tokens.config.ts') {
-        const file = store.state.files[filename]
-        if (!seen.has(file)) {
-          processed.push(
-            `\nwindow.__css__ += ${JSON.stringify(file.compiled.css)}`
-          )
-        }
-      }
       if (filename.endsWith('.css')) {
         const file = store.state.files[filename]
         if (!seen.has(file)) {

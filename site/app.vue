@@ -8,7 +8,7 @@ const setVH = () => {
 window.addEventListener('resize', setVH)
 setVH()
 const useDevMode = ref(false)
-const useSSRMode = ref(false)
+const useSSRMode = ref(true)
 let hash = location.hash.slice(1)
 if (hash.startsWith('__DEV__')) {
   hash = hash.slice(7)

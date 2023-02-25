@@ -35,13 +35,20 @@ export class ReplStore implements Store {
   }: StoreOptions = {}) {
     let files: StoreState['files'] = {}
 
+    // Try to deserialize state from URL
+    let resolvedState: any
     if (serializedState) {
-      const saved = JSON.parse(atou(serializedState))
-      for (const filename in saved) {
-        files[filename] = new File(filename, saved[filename])
+      resolvedState = atou(serializedState)
+      if (resolvedState) {
+        const saved = JSON.parse(resolvedState)
+        for (const filename in saved) {
+          files[filename] = new File(filename, saved[filename])
+        }
       }
     }
-    else {
+
+    // No state deserialized, add default files
+    if (!resolvedState) {
       files = {
         [defaultThemeFile]: new File(defaultThemeFile, defaultTheme),
         [defaultMainFile]: new File(defaultMainFile, defaultComponent),
@@ -152,6 +159,7 @@ export class ReplStore implements Store {
           {
             imports: {
               'vue': this.defaultVueRuntimeURL,
+              'vue/server-renderer': this.defaultVueServerRendererURL,
               'pinceau': this.defaultPinceauURL,
               'pinceau/runtime': this.defaultPinceauRuntimeURL,
             },

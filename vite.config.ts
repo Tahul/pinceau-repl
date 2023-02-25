@@ -21,11 +21,14 @@ export default defineConfig({
   plugins: [vue(), genStub],
   define: {
     'process.env': {},
+    '__filename': undefined,
+    'process.cwd': '() => \'\'',
   },
   optimizeDeps: {
     include: [
       'onigasm',
       'vscode-uri',
+      'style-dictionary-esm',
     ],
   },
   resolve: {
@@ -45,7 +48,6 @@ export default defineConfig({
       formats: ['es'],
       fileName: () => '[name].js',
     },
-
     rollupOptions: {
       input: {
         'pinceau-repl': './src/index.ts',
