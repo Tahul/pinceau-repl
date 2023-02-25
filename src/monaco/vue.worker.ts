@@ -4,7 +4,7 @@ import type * as monaco from 'monaco-editor-core'
 import * as ts from 'typescript'
 import { resolveConfig } from '@volar/vue-language-service'
 import * as volarWorker from '@volar/monaco/worker'
-// import pinceauVolar from 'pinceau/volar'
+import pinceauVolar from 'pinceau/volar'
 import type { MyWorkerContextHost } from './host'
 
 self.onmessage = () => {
@@ -30,7 +30,7 @@ self.onmessage = () => {
           compilerOptions,
           {
             plugins: [
-              // pinceauVolar,
+              pinceauVolar,
             ],
           },
         ),

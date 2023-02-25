@@ -5,7 +5,7 @@ import type { LanguageService } from '@volar/vue-language-service'
 import { editor, languages } from 'monaco-editor-core'
 import * as volar from '@volar/monaco'
 import { MyWorkerContextHost } from './host'
-import VueWorker from 'monaco-volar/vue.worker?worker'
+import VueWorker from './vue.worker?worker'
 
 export function loadOnigasm() {
   return onigasm.loadWASM(onigasmWasm)

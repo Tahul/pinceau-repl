@@ -3,7 +3,7 @@ import { Repl as ReplComponent, ReplStore } from '../src'
 import MonacoEditor from '../src/editor/MonacoEditor.vue'
 import App from './app.vue'
 
-(window as any).process = { env: {} }
+;(window as any).process = { env: {} }
 
 // @ts-expect-error Custom window property
 window.VUE_DEVTOOLS_CONFIG = {
