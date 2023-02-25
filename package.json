@@ -33,8 +33,8 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite",
-    "dev:site": "vite -c site.config.ts",
+    "dev": "vite --force",
+    "dev:site": "vite -c site.config.ts --force",
     "build": "vite build",
     "build:site": "vite -c site.config.ts build",
     "build:types": "vue-tsc -p tsconfig.build.json && api-extractor run -c api-extractor.json && rimraf dist/src",
@@ -97,6 +97,9 @@
       "allowedVersions": {
         "monaco-editor-core": "0.35.0"
       }
+    },
+    "overrides": {
+      "@volar/vue-language-core": "1.2.0-patch.2"
     }
   }
 }

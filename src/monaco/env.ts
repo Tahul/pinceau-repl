@@ -5,7 +5,7 @@ import type { LanguageService } from '@volar/vue-language-service'
 import { editor, languages } from 'monaco-editor-core'
 import * as volar from '@volar/monaco'
 import { MyWorkerContextHost } from './host'
-import VueWorker from './vue.worker?worker'
+import VueWorker from 'monaco-volar/vue.worker?worker'
 
 export function loadOnigasm() {
   return onigasm.loadWASM(onigasmWasm)
@@ -45,6 +45,7 @@ export function setupMonacoEnv(takeoverMode = false) {
       createData: {},
       host: new MyWorkerContextHost(),
     })
+    
     const languageId = takeoverMode
       ? [
           'vue',
@@ -55,6 +56,7 @@ export function setupMonacoEnv(takeoverMode = false) {
           'json',
         ]
       : ['vue']
+
     volar.editor.activateMarkers(worker, languageId, 'vue', editor)
     await volar.languages.registerProvides(worker, languageId, languages)
   }

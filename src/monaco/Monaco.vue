@@ -1,8 +1,9 @@
 <script lang="ts">
 import { loadGrammars, loadTheme } from 'monaco-volar'
 import { loadOnigasm, setupMonacoEnv } from './env'
-await loadOnigasm()
+
 setupMonacoEnv(true)
+await loadOnigasm()
 </script>
 
 <script setup lang="ts">

@@ -1,5 +1,8 @@
 lockfileVersion: 5.4
 
+overrides:
+  '@volar/vue-language-core': 1.2.0-patch.2
+
 specifiers:
   '@antfu/eslint-config': ^0.35.3
   '@babel/parser': ^7.21.2
@@ -1575,8 +1578,8 @@ packages:
       '@volar/language-core': 1.3.0-alpha.0
     dev: false
 
-  /@volar/vue-language-core/1.2.0:
-    resolution: {integrity: sha512-w7yEiaITh2WzKe6u8ZdeLKCUz43wdmY/OqAmsB/PGDvvhTcVhCJ6f0W/RprZL1IhqH8wALoWiwEh/Wer7ZviMQ==}
+  /@volar/vue-language-core/1.2.0-patch.2:
+    resolution: {integrity: sha512-Vkfki166pbYpd7lG/FblbkNELbQmz3NzIFbQVcd7WUIvkse2dXCHzhx7RQnlkchQ+dNbCfF30VkVkxHoZy4ZCA==}
     dependencies:
       '@volar/language-core': 1.3.0-alpha.0
       '@volar/source-map': 1.3.0-alpha.0
@@ -1604,7 +1607,7 @@ packages:
       '@volar/language-service': 1.3.0-alpha.0
       '@volar/shared': 1.3.0-alpha.0
       '@volar/source-map': 1.3.0-alpha.0
-      '@volar/vue-language-core': 1.2.0
+      '@volar/vue-language-core': 1.2.0-patch.2
       '@vue/compiler-dom': 3.2.47
       '@vue/reactivity': 3.2.47
       '@vue/shared': 3.2.47
@@ -1619,7 +1622,7 @@ packages:
     resolution: {integrity: sha512-zjmRi9y3J1EkG+pfuHp8IbHmibihrKK485cfzsHjiuvJMGrpkWvlO5WVEk8oslMxxeGC5XwBFE9AOlvh378EPA==}
     dependencies:
       '@volar/typescript': 1.3.0-alpha.0
-      '@volar/vue-language-core': 1.2.0
+      '@volar/vue-language-core': 1.2.0-patch.2
     dev: false
 
   /@vscode/emmet-helper/2.8.6:
@@ -4165,7 +4168,7 @@ packages:
     resolution: {integrity: sha512-3DDlJyA5qW8Bnbwkc86AiiSEu15gOy+ab2DxSyb27gESuQl5A3pcz8y3cBIc9/Rfft9hTcZlGpSe/jK89wEl+A==}
     dependencies:
       '@unocss/reset': 0.49.8
-      '@volar/vue-language-core': 1.2.0
+      '@volar/vue-language-core': 1.2.0-patch.2
       acorn: 8.8.2
       chroma-js: 2.4.2
       consola: 2.15.3
@@ -5089,7 +5092,7 @@ packages:
     peerDependencies:
       typescript: '*'
     dependencies:
-      '@volar/vue-language-core': 1.2.0
+      '@volar/vue-language-core': 1.2.0-patch.2
       '@volar/vue-typescript': 1.2.0
       typescript: 4.9.5
     dev: false
