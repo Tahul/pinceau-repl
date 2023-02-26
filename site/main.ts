@@ -2,6 +2,7 @@ import { createApp, h, watchEffect } from 'vue'
 import { Repl as ReplComponent, ReplStore } from '../src'
 import MonacoEditor from '../src/editor/MonacoEditor.vue'
 import App from './app.vue'
+import PreviewPlugin from 'vite-plugin-vue-component-preview/client'
 
 ;(window as any).process = { env: {} }
 
@@ -46,6 +47,8 @@ const Repl = {
 }
 
 const app = createApp(App)
+
+app.use(PreviewPlugin)
 
 app.component('PinceauRepl', Repl)
 

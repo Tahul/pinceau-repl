@@ -1,6 +1,7 @@
 import type { Plugin } from 'vite'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import preview from 'vite-plugin-vue-component-preview'
 import { env, node, nodeless } from 'unenv'
 
 const { alias } = env(node, nodeless)
@@ -18,7 +19,7 @@ const genStub: Plugin = {
 }
 
 export default defineConfig({
-  plugins: [vue(), genStub],
+  plugins: [preview(), vue(), genStub],
   define: {
     'process.env': {},
     '__filename': undefined,
