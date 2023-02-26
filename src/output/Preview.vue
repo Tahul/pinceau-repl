@@ -224,7 +224,6 @@ async function updatePreview() {
           styleNode.type = 'text/css'
           document.head.appendChild(styleNode)
           styleNode.innerHTML = pinceauHydratableCss
-          console.log({styleNode, pinceauHydratableCss})
          }).catch(err => {
            console.error("SSR Error", err)
          })

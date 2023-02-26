@@ -21,9 +21,10 @@ const genStub: Plugin = {
 export default defineConfig({
   plugins: [preview(), vue(), genStub],
   define: {
-    'process.env': {},
     '__filename': undefined,
+    'process.env': '0',
     'process.cwd': '() => \'\'',
+    'process.platform': '0'
   },
   optimizeDeps: {
     include: [
