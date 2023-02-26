@@ -1,17 +1,15 @@
 <script lang="ts">
 import { loadTheme } from 'monaco-volar'
 import * as monaco from 'monaco-editor-core'
+import * as onigasm from 'onigasm'
+import onigasmWasm from 'onigasm/lib/onigasm.wasm?url'
+import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watchEffect } from 'vue'
 import { getOrCreateModel } from './utils'
 import { setupMonacoEnv } from './env'
 import { loadGrammars } from './grammars'
-import * as onigasm from 'onigasm'
-import onigasmWasm from 'onigasm/lib/onigasm.wasm?url'
-setupMonacoEnv(true)
-onigasm.loadWASM(onigasmWasm)
 </script>
 
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watchEffect } from 'vue'
 const props = withDefaults(defineProps<{
   value?: string
   filename?: string
@@ -25,7 +23,8 @@ const emits = defineEmits<{
   (e: 'change', value: string): void
   (e: 'save', value: string): void
 }>()
-
+setupMonacoEnv(true)
+onigasm.loadWASM(onigasmWasm)
 const containerRef = ref<HTMLDivElement | null>()
 const ready = ref(false)
 const editor = shallowRef<monaco.editor.IStandaloneCodeEditor | undefined>(undefined)

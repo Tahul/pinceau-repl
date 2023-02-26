@@ -32,5 +32,6 @@ const language = computed(() => {
     :filename="filename"
     :language="language"
     @save="onChange"
+    @change="onChange"
   />
 </template>
