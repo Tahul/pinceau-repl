@@ -24,13 +24,12 @@ export default defineConfig({
     '__filename': undefined,
     'process.env': '0',
     'process.cwd': '() => \'\'',
-    'process.platform': '0'
+    'process.platform': '0',
   },
   optimizeDeps: {
     include: [
       'onigasm',
       'vscode-uri',
-      'style-dictionary-esm',
     ],
   },
   resolve: {

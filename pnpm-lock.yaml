@@ -67,7 +67,7 @@ dependencies:
   nanoid: 4.0.1
   onigasm: 2.2.5
   pathe: 1.1.0
-  pinceau: 0.17.7_postcss@8.4.21
+  pinceau: 0.17.9_postcss@8.4.21
   postcss: 8.4.21
   postcss-custom-properties: 13.1.4_postcss@8.4.21
   postcss-dark-theme-class: 0.7.3_postcss@8.4.21
@@ -4292,8 +4292,8 @@ packages:
       - supports-color
     dev: false
 
-  /pinceau/0.17.7_postcss@8.4.21:
-    resolution: {integrity: sha512-9pHBIbmXZHdWkId+yXA6D+o/yrodJopZhWRmZd658k3oChlOi4UBa04zbJelb15S9jr+zaw39zDpbplkOAhMeQ==}
+  /pinceau/0.17.9_postcss@8.4.21:
+    resolution: {integrity: sha512-EBXRFHrl/h0ZeG+/CAq9gO08+3dyTyRZbGjItQ9DxpesXigtGs8DMU4DD7R5zl4aQ0m4+jJUviScbz+iL47APA==}
     dependencies:
       '@unocss/reset': 0.50.1
       '@volar/vue-language-core': 1.2.0-patch.2
