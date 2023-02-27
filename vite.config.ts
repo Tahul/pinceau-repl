@@ -4,7 +4,7 @@ import vue from '@vitejs/plugin-vue'
 import preview from 'vite-plugin-vue-component-preview'
 import { env, node, nodeless } from 'unenv'
 
-const { alias, external } = env(nodeless, node)
+const { alias } = env(nodeless, node)
 
 const genStub: Plugin = {
   name: 'gen-stub',
