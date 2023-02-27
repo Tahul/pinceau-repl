@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, provide, toRef } from 'vue'
+import { provide, toRef } from 'vue'
 import SplitPane from './SplitPane.vue'
 import Output from './output/Output.vue'
-import ThemeOutput from './output/ThemeOutput.vue'
 import { ReplStore } from './store'
 import type { EditorComponentType, SFCOptions, Store } from './types'
 import EditorContainer from './editor/EditorContainer.vue'
@@ -38,22 +37,15 @@ provide('store', props.store)
 provide('autoresize', props.autoResize)
 provide('import-map', toRef(props, 'showImportMap'))
 provide('clear-console', toRef(props, 'clearConsole'))
-
-const isTheme = computed(() => (props.store.state.activeFile.filename === 'tokens.config.ts'))
 </script>
 
 <template>
-  <div class="pinceau-repl">
+  <div class="vue-repl">
     <SplitPane :layout="layout">
       <template #left>
         <EditorContainer :editor-component="editor" />
       </template>
       <template #right>
-        <ThemeOutput
-          v-if="isTheme"
-          :show-compile-output="props.showCompileOutput"
-          :ssr="!!props.ssr"
-        />
         <Output
           :show-compile-output="props.showCompileOutput"
           :ssr="!!props.ssr"
@@ -64,7 +56,7 @@ const isTheme = computed(() => (props.store.state.activeFile.filename === 'token
 </template>
 
 <style scoped>
-.pinceau-repl {
+.vue-repl {
   --bg: #fff;
   --bg-soft: #f8f8f8;
   --border: #ddd;
@@ -82,7 +74,7 @@ const isTheme = computed(() => (props.store.state.activeFile.filename === 'token
   background-color: var(--bg-soft);
 }
 
-.dark .pinceau-repl {
+.dark .vue-repl {
   --bg: #1a1a1a;
   --bg-soft: #242424;
   --border: #383838;

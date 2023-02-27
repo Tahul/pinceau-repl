@@ -3,24 +3,19 @@ import * as defaultCompiler from 'vue/compiler-sfc'
 import { compileFile } from './transform'
 import { atou, utoa } from './utils'
 import { File } from './file'
-import { buttonComponent, defaultComponent, defaultComponentFile, defaultMainFile, defaultTheme, defaultThemeFile } from './defaults'
+import { defaultMainFile, defaultMainFileContent } from './defaults'
 import type { OutputModes, SFCOptions, Store, StoreOptions, StoreState } from './types'
 
 export class ReplStore implements Store {
   state: StoreState
   compiler = defaultCompiler
   vueVersion?: string
-  pinceauVersion?: string
   options?: SFCOptions
   initialShowOutput: boolean
   initialOutputMode: OutputModes
 
   private defaultVueRuntimeURL: string
   private defaultVueServerRendererURL: string
-  private defaultPinceauURL: string
-  private defaultPinceauUtilsURL: string
-  private defaultPinceauRuntimeURL: string
-  private defaultPinceauVolarURL: string
   private pendingCompiler: Promise<any> | null = null
 
   constructor({
@@ -28,10 +23,6 @@ export class ReplStore implements Store {
     head = [],
     defaultVueRuntimeURL = `https://unpkg.com/@vue/runtime-dom@${version}/dist/runtime-dom.esm-browser.js`,
     defaultVueServerRendererURL = `https://unpkg.com/@vue/server-renderer@${version}/dist/server-renderer.esm-browser.js`,
-    defaultPinceauURL = 'https://unpkg.com/pinceau@latest/dist/browser/index.js',
-    defaultPinceauUtilsURL = 'https://unpkg.com/pinceau@latest/dist/browser/utils.js',
-    defaultPinceauRuntimeURL = 'https://unpkg.com/pinceau@latest/dist/browser/runtime.js',
-    defaultPinceauVolarURL = 'https://unpkg.com/pinceau@latest/dist/browser/volar.js',
     showOutput = false,
     outputMode = 'preview',
   }: StoreOptions = {}) {
@@ -53,18 +44,12 @@ export class ReplStore implements Store {
     // No state deserialized, add default files
     if (!resolvedState) {
       files = {
-        [defaultThemeFile]: new File(defaultThemeFile, defaultTheme),
-        [defaultMainFile]: new File(defaultMainFile, defaultComponent),
-        [defaultComponentFile]: new File(defaultComponentFile, buttonComponent),
+        [defaultMainFile]: new File(defaultMainFile, defaultMainFileContent),
       }
     }
 
     this.defaultVueRuntimeURL = defaultVueRuntimeURL
     this.defaultVueServerRendererURL = defaultVueServerRendererURL
-    this.defaultPinceauRuntimeURL = defaultPinceauRuntimeURL
-    this.defaultPinceauVolarURL = defaultPinceauVolarURL
-    this.defaultPinceauUtilsURL = defaultPinceauUtilsURL
-    this.defaultPinceauURL = defaultPinceauURL
     this.initialShowOutput = showOutput
     this.initialOutputMode = outputMode as OutputModes
 
@@ -78,10 +63,6 @@ export class ReplStore implements Store {
       head,
       vueRuntimeURL: this.defaultVueRuntimeURL,
       vueServerRendererURL: this.defaultVueServerRendererURL,
-      pinceauRuntimeURL: this.defaultPinceauRuntimeURL,
-      pinceauUtilsURL: this.defaultPinceauUtilsURL,
-      pinceauVolarURL: this.defaultPinceauVolarURL,
-      pinceauURL: this.defaultPinceauURL,
       resetFlip: true,
     })
 
@@ -136,7 +117,7 @@ export class ReplStore implements Store {
   async setFiles(newFiles: Record<string, string>, mainFile = defaultMainFile) {
     const files: Record<string, File> = {}
     if (mainFile === defaultMainFile && !newFiles[mainFile]) {
-      files[mainFile] = new File(mainFile, defaultComponent)
+      files[mainFile] = new File(mainFile, defaultMainFileContent)
     }
     for (const filename in newFiles) {
       files[filename] = new File(filename, newFiles[filename])
@@ -165,11 +146,9 @@ export class ReplStore implements Store {
             imports: {
               'vue': this.defaultVueRuntimeURL,
               'vue/server-renderer': this.defaultVueServerRendererURL,
-              'pinceau': this.defaultPinceauURL,
-              'pinceau/runtime': this.defaultPinceauRuntimeURL,
             },
             head: [
-              '<link rel="stylesheet" href="https://unpkg.com/@unocss/reset/tailwind.css" />',
+              '<link rel="stylesheet" href="https://unpkg.com/@unocss/reset/normalize.css" />',
             ],
           },
           null,
@@ -180,20 +159,6 @@ export class ReplStore implements Store {
     else {
       try {
         const json = JSON.parse(map.code)
-
-        // Add Pinceau imports proxy
-        if (!json.imports.pinceau) {
-          json.imports.pinceau = this.defaultPinceauURL
-          map.code = JSON.stringify(json, null, 2)
-        }
-
-        // Add Pinceau runtime imports proxy
-        if (!json.imports['pinceau/runtime']) {
-          json.imports['pinceau/runtime'] = this.defaultPinceauRuntimeURL
-          map.code = JSON.stringify(json, null, 2)
-        }
-
-        // Regular Vue imports
         if (!json.imports.vue) {
           json.imports.vue = this.defaultVueRuntimeURL
           map.code = JSON.stringify(json, null, 2)

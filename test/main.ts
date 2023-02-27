@@ -17,15 +17,6 @@ const App = {
       defaultVueServerRendererURL: import.meta.env.PROD
         ? undefined
         : `${location.origin}/src/vue-server-renderer-dev-proxy`,
-      defaultPinceauRuntimeURL: import.meta.env.PROD
-        ? undefined
-        : `${location.origin}/src/pinceau-runtime-proxy`,
-      defaultPinceauUtilsURL: import.meta.env.PROD
-        ? undefined
-        : `${location.origin}/src/pinceau-utils-proxy`,
-      defaultPinceauURL: import.meta.env.PROD
-        ? undefined
-        : `${location.origin}/src/pinceau-proxy`,
     })
 
     watchEffect(() => history.replaceState({}, '', store.serialize()))

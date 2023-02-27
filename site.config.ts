@@ -38,9 +38,6 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      // /Users/yaelguilloux/Code/sandbox/pinceau/src/index.ts | pinceau
-      'pinceau/*': '/Users/yaelguilloux/Code/sandbox/pinceau/dist/browser/*',
-      'jiti': path.resolve(__dirname, 'site/jiti-proxy.ts'),
       ...alias,
       'source-map-js': 'node_modules/source-map-js/source-map.js',
     },

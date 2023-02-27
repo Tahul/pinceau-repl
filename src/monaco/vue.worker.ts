@@ -4,12 +4,9 @@ import type * as monaco from 'monaco-editor-core'
 import * as ts from 'typescript'
 import { resolveConfig } from '@volar/vue-language-service'
 import * as volarWorker from '@volar/monaco/worker'
-import pinceauVolar from 'pinceau/volar'
 import type { MyWorkerContextHost } from './host'
 
-self.onmessage = (message: MessageEvent) => {
-  const data = JSON.parse(message.data)
-
+self.onmessage = () => {
   worker.initialize(
     (ctx: monaco.worker.IWorkerContext<MyWorkerContextHost>) => {
       const compilerOptions: ts.CompilerOptions = {
@@ -18,12 +15,6 @@ self.onmessage = (message: MessageEvent) => {
         jsx: ts.JsxEmit.Preserve,
         module: ts.ModuleKind.ESNext,
         moduleResolution: ts.ModuleResolutionKind.NodeJs,
-        paths: {
-          '#pinceau/theme': [],
-          '#pinceau/utils': [],
-          '#pinceau/schema': [],
-          '#pinceau/definitions': [],
-        },
       }
 
       return volarWorker.createLanguageService({
@@ -38,7 +29,7 @@ self.onmessage = (message: MessageEvent) => {
           compilerOptions,
           {
             plugins: [
-              pinceauVolar,
+              /* tsconfig.json vueCompilerOptions plugins */
             ],
           },
         ),
@@ -47,11 +38,6 @@ self.onmessage = (message: MessageEvent) => {
           compilerOptions,
           autoFetchTypes: {
             onFetchTypesFiles(files) {
-              files['/node_modules/#pinceau/theme.d.ts'] = data.theme
-              files['/node_modules/#pinceau/theme/index.d.ts'] = data.theme
-              files['/node_modules/#pinceau/utils.d.ts'] = data.utils
-              files['/node_modules/#pinceau/utils/index.d.ts'] = data.utils
-              files['/node_modules/#pinceau/package.json'] = '{ "name": "#pinceau" }'
               return ctx.host.syncAutoTypesFetchFiles(files)
             },
           },

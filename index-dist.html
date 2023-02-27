@@ -4,20 +4,20 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pinceau Playground</title>
+    <title>Playground</title>
     <style>
       body {
         margin: 0;
       }
-      .pinceau-repl {
+      .vue-repl {
         height: 100vh;
       }
     </style>
 
     <script type="module">
       import { createApp } from 'vue'
-      import { Repl } from './dist/pinceau-repl'
-      import Monaco from './dist/pinceau-repl-monaco-editor'
+      import { Repl } from './dist/vue-repl'
+      import Monaco from './dist/vue-repl-monaco-editor'
       import './dist/style.css'
       createApp(Repl, {
         editor: Monaco
