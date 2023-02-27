@@ -1,10 +1,13 @@
+import path from 'path'
 import type { Plugin } from 'vite'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import preview from 'vite-plugin-vue-component-preview'
 import { env, node, nodeless } from 'unenv'
+import execa from 'execa'
 
 const { alias } = env(node, nodeless)
+
+const commit = execa.sync('git', ['rev-parse', 'HEAD']).stdout.slice(0, 7)
 
 const genStub: Plugin = {
   name: 'gen-stub',
@@ -19,12 +22,13 @@ const genStub: Plugin = {
 }
 
 export default defineConfig({
-  plugins: [preview(), vue(), genStub],
+  root: path.resolve(__dirname, './site'),
+  plugins: [vue(), genStub],
   define: {
-    '__filename': undefined,
-    'process.env': '0',
-    'process.cwd': '() => \'\'',
-    'process.platform': '0',
+    'process.env': {},
+    'process.version': {},
+    '__COMMIT__': JSON.stringify(commit),
+    '__VUE_PROD_DEVTOOLS__': JSON.stringify(true),
   },
   optimizeDeps: {
     include: [
@@ -40,21 +44,15 @@ export default defineConfig({
   },
   worker: {
     format: 'es',
+    rollupOptions: {
+      external: ['fs.realpath'],
+    },
   },
   build: {
-    target: 'esnext',
-    minify: false,
-    lib: {
-      entry: './src/index.ts',
-      formats: ['es'],
-      fileName: () => '[name].js',
-    },
     rollupOptions: {
       input: {
-        'vue-repl': './src/index.ts',
-        'vue-repl-monaco-editor': './src/editor/MonacoEditor.vue',
+        main: './site/index.html',
       },
-      external: ['vue', 'vue/compiler-sfc', 'source-map-js'],
     },
   },
 })
