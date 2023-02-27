@@ -13,7 +13,10 @@ const EditorComponent = toRef(props, 'editorComponent')
 
 const store = inject('store') as Store
 
-const onChange = debounce((code: string) => store.state.activeFile.code = code, 500)
+const onChange = debounce((code: string) => {
+  store.state.activeFile.code = code
+  console.log(store.state.activeFile.filename)
+}, 500)
 </script>
 
 <template>

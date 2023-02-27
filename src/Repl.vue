@@ -62,8 +62,8 @@ provide('clear-console', toRef(props, 'clearConsole'))
   --border: #ddd;
   --text-light: #888;
   --font-code: Menlo, Monaco, Consolas, 'Courier New', monospace;
-  --color-branding: #42b883;
-  --color-branding-dark: #416f9c;
+  --color-branding: #ED4D31;
+  --color-branding-dark: #4560B0;
   --header-height: 38px;
 
   font-size: 13px;
@@ -79,8 +79,8 @@ provide('clear-console', toRef(props, 'clearConsole'))
   --bg-soft: #242424;
   --border: #383838;
   --text-light: #aaa;
-  --color-branding: #42d392;
-  --color-branding-dark: #89ddff;
+  --color-branding: #F48E7C;
+  --color-branding-dark: #7B8FCB;
 }
 
 :deep(button) {
