@@ -4,7 +4,9 @@ import vue from '@vitejs/plugin-vue'
 import preview from 'vite-plugin-vue-component-preview'
 import { env, node, nodeless } from 'unenv'
 
-const { alias } = env(nodeless, node)
+const isDev = process.env.NODE_ENV === 'development'
+
+const unenv = env(node, nodeless)
 
 const genStub: Plugin = {
   name: 'gen-stub',
@@ -18,14 +20,14 @@ const genStub: Plugin = {
   },
 }
 
+const define = {
+  __filename: undefined,
+  process: isDev ? unenv.inject.process : 'process',
+}
+
 export default defineConfig({
   plugins: [preview(), vue(), genStub],
-  define: {
-    '__filename': undefined,
-    'process.env': '0',
-    'process.platform': '0',
-    'process.cwd': '() => \'\'',
-  },
+  define,
   optimizeDeps: {
     include: [
       'onigasm',
@@ -34,7 +36,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      ...alias,
+      ...unenv.alias,
       'source-map-js': 'node_modules/source-map-js/source-map.js',
     },
   },
@@ -54,7 +56,20 @@ export default defineConfig({
         'vue-repl': './src/index.ts',
         'vue-repl-monaco-editor': './src/editor/MonacoEditor.vue',
       },
-      external: ['vue', 'vue/compiler-sfc', 'source-map-js'],
+      external: [
+        'vue',
+        'vue/compiler-sfc',
+        'pinceau/runtime',
+        'source-map-js',
+        'monaco',
+        'monaco-textmate',
+        'monaco-editor',
+        'monaco-editor-core',
+        'monaco-editor-textmate',
+        'monaco-volar',
+        'onigasm',
+        '@volar/monaco',
+      ],
     },
   },
 })
