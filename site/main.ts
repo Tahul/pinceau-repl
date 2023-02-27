@@ -1,10 +1,17 @@
-import { createApp, h, watchEffect } from 'vue'
-import { Repl, ReplStore } from '../src'
+import { createApp, h } from 'vue'
+import PreviewPlugin from 'vite-plugin-vue-component-preview/client'
+
+import { Repl as ReplComponent, ReplStore } from '../src'
 import MonacoEditor from '../src/editor/MonacoEditor.vue'
+import App from './app.vue'
+(window as any).process = { env: {} }
 
-;(window as any).process = { env: {} }
+// @ts-expect-error Custom window property
+window.VUE_DEVTOOLS_CONFIG = {
+  defaultSelectedAppId: 'repl',
+}
 
-const App = {
+const Repl = {
   setup() {
     const query = new URLSearchParams(location.search)
     const store = new ReplStore({
@@ -13,25 +20,23 @@ const App = {
       outputMode: query.get('om') || 'preview',
       defaultVueRuntimeURL: import.meta.env.PROD
         ? undefined
-        : `${location.origin}/src/vue-dev-proxy`,
+        : `${location.origin}/vue-dev-proxy`,
       defaultVueServerRendererURL: import.meta.env.PROD
         ? undefined
-        : `${location.origin}/src/vue-server-renderer-dev-proxy`,
+        : `${location.origin}/vue-server-renderer-dev-proxy`,
       defaultPinceauRuntimeURL: import.meta.env.PROD
         ? undefined
-        : `${location.origin}/src/pinceau-runtime-proxy`,
+        : `${location.origin}/pinceau-runtime-proxy`,
       defaultPinceauUtilsURL: import.meta.env.PROD
         ? undefined
-        : `${location.origin}/src/pinceau-utils-proxy`,
+        : `${location.origin}/pinceau-utils-proxy`,
       defaultPinceauURL: import.meta.env.PROD
         ? undefined
-        : `${location.origin}/src/pinceau-proxy`,
+        : `${location.origin}/pinceau-proxy`,
     })
 
-    watchEffect(() => history.replaceState({}, '', store.serialize()))
-
     return () =>
-      h(Repl, {
+      h(ReplComponent, {
         store,
         editor: MonacoEditor,
         ssr: false,
@@ -39,4 +44,10 @@ const App = {
   },
 }
 
-createApp(App).mount('#app')
+const app = createApp(App)
+
+app.use(PreviewPlugin)
+
+app.component('PinceauRepl', Repl)
+
+app.mount('#app')

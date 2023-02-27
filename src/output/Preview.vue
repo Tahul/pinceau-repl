@@ -15,6 +15,7 @@ import { PreviewProxy } from './PreviewProxy'
 import { compileModulesForPreview } from './moduleCompiler'
 import type { Store } from '../types'
 import { debounce } from '../utils'
+import { useWebWorker } from '@vueuse/core'
 
 const props = defineProps<{ show: boolean; ssr: boolean }>()
 
@@ -88,6 +89,8 @@ function createSandbox() {
   const importMap = store.getImportMap()
   if (!importMap.imports) importMap.imports = {}
   if (!importMap.imports.vue) importMap.imports.vue = store.state.vueRuntimeURL
+  if (!importMap.imports.pinceauRuntime) importMap.imports['pinceau/runtime'] = store.state.pinceauRuntimeURL
+  if (!importMap.imports.pinceauUtils) importMap.imports['pinceau/utils'] = store.state.pinceauUtilsURL
 
   // Support import map in srcDoc
   let sandboxSrc = srcdoc.replace(
@@ -106,6 +109,20 @@ function createSandbox() {
     /<!--HEAD_MAP-->/,
     headScripts.join('\n') || ''
   )
+
+  // Support Pinceau theme injection
+  sandboxSrc = sandboxSrc.replace(
+    /<!--PINCEAU_THEME-->/,
+    `<style id="pinceau-theme">${store?.state?.files?.['tokens.config.ts']?.compiled?.css}</style>`
+  )
+
+  // Enable Pinceau SSR sheet
+  if (props.ssr) {
+    sandboxSrc = sandboxSrc.replace(
+      /<!--PINCEAU_SSR-->/,
+      `<style id="pinceau-runtime-hydratable"></style>`
+    )
+  }
 
   sandbox.srcdoc = sandboxSrc
   container.value.appendChild(sandbox)
@@ -200,14 +217,22 @@ async function updatePreview() {
         `const __modules__ = {};`,
         ...ssrModules,
         `import { renderToString as _renderToString } from 'vue/server-renderer'
+         import { plugin as pinceau } from 'pinceau/runtime'
          import { createSSRApp as _createApp } from 'vue'
          const AppComponent = __modules__["${mainFile}"].default
          AppComponent.name = 'Repl'
          const app = _createApp(AppComponent)
          app.config.unwrapInjectedRef = true
          app.config.warnHandler = () => {}
+         app.use(pinceau)
          window.__ssr_promise__ = _renderToString(app).then(html => {
           document.body.innerHTML = '<div id="app">' + html + '</div>'
+          const pinceauHydratableCss = app.config.globalProperties.$pinceauSsr.get()
+          const styleNode = document.createElement('style')
+          styleNode.id = 'pinceau-runtime-hydratable'
+          styleNode.type = 'text/css'
+          document.head.appendChild(styleNode)
+          styleNode.innerHTML = pinceauHydratableCss
          }).catch(err => {
            console.error("SSR Error", err)
          })
@@ -228,16 +253,21 @@ async function updatePreview() {
       (isSSR ? `` : `document.body.innerHTML = '<div id="app"></div>'`),
       ...modules,
       `document.getElementById('__sfc-styles').innerHTML = window.__css__`,
+      `document.getElementById('pinceau-theme').innerHTML = \`${store.state.files['tokens.config.ts'].compiled.css}\``,
+      // Cleanup SSR sheet
+      (isSSR ? `const runtimeSheet = document.getElementById('pinceau-runtime')\nruntimeSheet.id = 'pinceau-runtime-hydratable'\nruntimeSheet.innerHTML = ''` : ``),
     ]
 
     // if main file is a vue file, mount it.
     if (mainFile.endsWith('.vue')) {
       codeToEval.push(
         `import { ${isSSR ? `createSSRApp` : `createApp`} as _createApp } from "vue"
+        import { plugin as pinceau } from 'pinceau/runtime'
         const _mount = () => {
           const AppComponent = __modules__["${mainFile}"].default
           AppComponent.name = 'Repl'
           const app = window.__app__ = _createApp(AppComponent)
+          app.use(pinceau)
           app.config.unwrapInjectedRef = true
           app.config.errorHandler = e => console.error(e)
           app.mount('#app')

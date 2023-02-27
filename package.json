@@ -1,44 +1,52 @@
 {
-  "name": "@vue/repl",
-  "version": "1.3.2",
-  "description": "Vue component for editing Vue components",
-  "homepage": "https://github.com/vue/repl#readme",
-  "bugs": {
-    "url": "https://github.com/vue/repl/issues"
-  },
+  "name": "pinceau-repl",
+  "version": "0.0.1",
+  "description": "Vue component for editing Vue components with Pinceau",
+  "author": "Evan You",
+  "license": "MIT",
+  "homepage": "https://github.com/Tahul/pinceau-repl#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vue/repl.git"
+    "url": "git+https://github.com/Tahul/pinceau-repl.git"
   },
-  "license": "MIT",
-  "author": "Evan You",
+  "bugs": {
+    "url": "https://github.com/Tahul/pinceau-repl/issues"
+  },
   "exports": {
     ".": {
       "types": "./dist/repl.d.ts",
       "require": "./dist/ssr-stub.js",
-      "import": "./dist/vue-repl.js"
+      "import": "./dist/pinceau-repl.js"
     },
     "./monaco-editor": {
       "types": "./dist/src/editor/MonacoEditor.vue.d.ts",
       "require": null,
-      "import": "./dist/vue-repl-monaco-editor.js"
+      "import": "./dist/pinceau-repl-monaco-editor.js"
     },
     "./style.css": "./dist/style.css",
     "./dist/style.css": "./dist/style.css"
   },
   "main": "dist/ssr-stub.js",
-  "module": "dist/vue-repl.js",
+  "module": "dist/pinceau-repl.js",
   "types": "dist/repl.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "vite build",
-    "build:types": "vue-tsc -p tsconfig.build.json && api-extractor run -c api-extractor.json && rimraf dist/src",
     "dev": "vite --force",
+    "dev:site": "vite -c site.config.ts --force",
+    "build": "vite build",
+    "build:site": "vite -c site.config.ts build",
+    "build:types": "vue-tsc -p tsconfig.build.json && api-extractor run -c api-extractor.json && rimraf dist/src",
+    "prepublishOnly": "npm run build && npm run build-types",
     "lint": "eslint . --cache",
-    "lint:fix": "eslint . --cache --fix",
-    "prepublishOnly": "npm run build && npm run build-types"
+    "lint:fix": "eslint . --cache --fix"
+  },
+  "contributors": [
+    "Yaël Guilloux <yael.guilloux@gmail.com>"
+  ],
+  "peerDependencies": {
+    "vue": "^3.2.37"
   },
   "dependencies": {
     "@babel/parser": "^7.21.2",
@@ -62,6 +70,7 @@
     "nanoid": "^4.0.1",
     "onigasm": "^2.2.5",
     "pathe": "^1.1.0",
+    "pinceau": "latest",
     "postcss": "^8.4.21",
     "postcss-custom-properties": "^13.1.4",
     "postcss-dark-theme-class": "^0.7.3",
@@ -84,9 +93,6 @@
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "vue": "^3.2.47"
-  },
-  "peerDependencies": {
-    "vue": "^3.2.37"
   },
   "pnpm": {
     "peerDependencyRules": {

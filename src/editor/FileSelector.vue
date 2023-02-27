@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Ref, VNode } from 'vue'
 import { computed, inject, ref } from 'vue'
+import { defaultThemeFile } from '../defaults'
 import type { Store } from '../types'
 
 const store = inject('store') as Store
@@ -11,7 +12,7 @@ const importMapFile = 'import-map.json'
 const showImportMap = inject('import-map') as Ref<boolean>
 const files = computed(() =>
   Object.entries(store.state.files)
-    .filter(([name, file]) => (importMapFile !== name) && !file.hidden)
+    .filter(([name, file]) => !([importMapFile, defaultThemeFile].includes(name)) && !file.hidden)
     .map(([name]) => name),
 )
 
@@ -118,6 +119,14 @@ function horizontalScroll(e: WheelEvent) {
     </button>
 
     <div class="toolbar">
+      <div
+        v-if="showImportMap"
+        class="file theme"
+        :class="{ active: store.state.activeFile.filename === defaultThemeFile }"
+        @click="store.setActive(defaultThemeFile)"
+      >
+        <span class="label">Theme</span>
+      </div>
       <div
         v-if="showImportMap"
         class="file import-map"

@@ -38,9 +38,13 @@ export function setupMonacoEnv(
 
     const getWorker = (self as any).MonacoEnvironment.getWorker
 
-    ;(self as any).MonacoEnvironment.getWorker = (_: any, label: string) => {
+      ; (self as any).MonacoEnvironment.getWorker = (_: any, label: string) => {
+      const theme = store.state.files['tokens.config.ts'].compiled.ts
+      const utils = store.state.files['tokens.config.ts'].compiled.utils
       if (label === 'vue') {
-        return new VueWorker()
+        const worker = new VueWorker()
+        worker.postMessage(JSON.stringify({ theme, utils }))
+        return worker
       }
       return getWorker()
     }

@@ -3,10 +3,28 @@ import type {
   CompilerOptions,
   SFCDescriptor,
 } from 'vue/compiler-sfc'
-import { shouldTransformRef, transformRef } from 'vue/compiler-sfc'
+import {
+  MagicString,
+  babelParse,
+  shouldTransformRef,
+  transformRef,
+} from 'vue/compiler-sfc'
 import { transform } from 'sucrase'
+import { createTokensHelper, defaultExport, printAst, theme, transforms, visitAst } from 'pinceau/utils'
 // @ts-ignore
 import hashId from 'hash-sum'
+
+// CSS Beautifier
+// @ts-ignore
+import { css as beautifyCss } from 'js-beautify'
+
+// Pinceau's PostCSS Plugins
+// @ts-ignore
+import PostCSSCustomProperties from 'postcss-custom-properties'
+// @ts-ignor
+import PostCSSNested from 'postcss-nested'
+// @ts-ignore
+import PostCSSDarkThemeClass from 'postcss-dark-theme-class'
 import type { Store } from './types'
 import type { File } from './file'
 
@@ -27,8 +45,53 @@ export async function compileFile(
     return
   }
 
+  // Get and compile tokens.config.ts file content
+  if (filename === 'tokens.config.ts') {
+    try {
+      code = await transformTS(code)
+      const defineThemeNode = defaultExport(babelParse(code, { sourceType: 'module' })) as any
+      const themeExpression = defineThemeNode.arguments[0]
+      // Eval utils to runtime from AST
+      let utilsCode
+      visitAst(
+        themeExpression,
+        {
+          visitObjectProperty(node) {
+            if (node?.parentPath?.parentPath?.name === 'root' && node.value.key.name === 'utils') {
+              utilsCode = node.value.value
+              return false
+            }
+            return this.traverse(node)
+          },
+        },
+      )
+      if (utilsCode) { utilsCode = printAst(utilsCode).code }
+      code = printAst(themeExpression).code
+      // eslint-disable-next-line no-eval
+      const _eval = eval
+      _eval(`var _tokensConfig = ${code}`)
+      // @ts-ignore
+      if (_tokensConfig) {
+        const definitions = {}
+        // @ts-ignore
+        const builtTheme = await theme.generateTheme(_tokensConfig as any, definitions, { studio: true, definitions: true, colorSchemeMode: 'media' }, true, false)
+        compiled.css = beautifyCss(builtTheme.outputs?.css)
+        compiled.ts = builtTheme.outputs?.ts
+        compiled.definitions = builtTheme.outputs?.definitions
+        compiled.schema = builtTheme.outputs?.schema
+        compiled.utils = builtTheme.outputs?.utils
+        compiled.tokens = builtTheme?.tokens
+        compiled.utilsCode = utilsCode || '{}'
+      }
+    }
+    catch (e) {
+      console.log({ e })
+    }
+    return
+  }
+
   if (filename.endsWith('.css')) {
-    compiled.css = code
+    compiled.css = beautifyCss(code)
     store.state.errors = []
     return
   }
@@ -50,33 +113,40 @@ export async function compileFile(
     return
   }
 
+  // Transform a Vue component with Pinceau transformers
+  const pinceauOutputs = store?.state?.files?.['tokens.config.ts']
+  const tokens = pinceauOutputs?.compiled?.tokens || {}
+  const $tokens = createTokensHelper(tokens, { key: 'variable' })
+  // Eval utils
+  // eslint-disable-next-line no-eval
+  const __eval = eval
+  __eval(`var _pinceauThemeUtils = ${pinceauOutputs?.compiled?.utilsCode || '{}'}`)
+  // @ts-ignore
+  const pinceauUtils = _pinceauThemeUtils || {}
+  code = transforms.replaceStyleTs(code, filename)
+  const magicString = new MagicString(code, { filename }) as any
+  const pinceauTransformed = transforms.transformVueSFC(code, { id: filename } as any, magicString, { utils: pinceauUtils, $tokens, runtime: true, options: { runtime: true } } as any)
   const id = hashId(filename)
-
-  const { errors, descriptor } = store.compiler.parse(code, {
+  const { errors, descriptor } = store.compiler.parse(pinceauTransformed?.magicString?.toString() || pinceauTransformed?.code || code, {
     filename,
     sourceMap: true,
   })
-
   if (errors.length) {
     store.state.errors = errors
     return
   }
 
   if (
-    descriptor.styles.some(s => s.lang)
+    descriptor.styles.some(s => !['postcss', 'ts', 'none'].includes(s?.lang || 'none'))
     || (descriptor.template && descriptor.template.lang)
   ) {
-    store.state.errors = [
-      'lang="x" pre-processors for <template> or <style> are currently not '
-        + 'supported.',
-    ]
+    store.state.errors = ['Only no lang, lang="ts" or lang="postcss" is supported for <style> blocks.']
     return
   }
 
   const scriptLang
     = (descriptor.script && descriptor.script.lang)
     || (descriptor.scriptSetup && descriptor.scriptSetup.lang)
-
   const isTS = scriptLang === 'ts'
   if (scriptLang && !isTS) {
     store.state.errors = ['Only lang="ts" is supported for <script> blocks.']
@@ -194,6 +264,11 @@ export async function compileFile(
       filename,
       id,
       scoped: style.scoped,
+      postcssPlugins: [
+        PostCSSCustomProperties,
+        PostCSSDarkThemeClass,
+        PostCSSNested,
+      ],
     })
 
     if (styleResult.errors.length) {
@@ -209,7 +284,7 @@ export async function compileFile(
     }
   }
   if (css) {
-    compiled.css = css.trim()
+    compiled.css = beautifyCss(css.trim())
   }
   else {
     compiled.css = '/* No <style> tags present */'

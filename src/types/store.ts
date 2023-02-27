@@ -9,6 +9,9 @@ export interface StoreState {
   errors: (string | Error)[]
   vueRuntimeURL: string
   vueServerRendererURL: string
+  pinceauRuntimeURL: string
+  pinceauUtilsURL: string
+  pinceauURL: string
   head: string[]
   // used to force reset the sandbox
   resetFlip: boolean
@@ -23,8 +26,9 @@ export interface SFCOptions {
 export interface Store {
   state: StoreState
   options?: SFCOptions
-  vueVersion?: string
   compiler: typeof defaultCompiler
+  vueVersion?: string
+  pinceauVersion?: string
   init: () => void
   setActive: (filename: string) => void
   addFile: (filename: string | File) => void
@@ -45,4 +49,8 @@ export interface StoreOptions {
   // Runtime proxies
   defaultVueRuntimeURL?: string
   defaultVueServerRendererURL?: string
+  defaultPinceauURL?: string
+  defaultPinceauUtilsURL?: string
+  defaultPinceauRuntimeURL?: string
+  defaultPinceauVolarURL?: string
 }
