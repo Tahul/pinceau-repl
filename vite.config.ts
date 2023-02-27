@@ -2,6 +2,9 @@ import type { Plugin } from 'vite'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import preview from 'vite-plugin-vue-component-preview'
+import { env, node, nodeless } from 'unenv'
+
+const { alias, external } = env(nodeless, node)
 
 const genStub: Plugin = {
   name: 'gen-stub',
@@ -31,6 +34,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      ...alias,
       'source-map-js': 'node_modules/source-map-js/source-map.js',
     },
   },
