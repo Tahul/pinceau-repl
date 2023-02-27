@@ -2,9 +2,6 @@ import type { Plugin } from 'vite'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import preview from 'vite-plugin-vue-component-preview'
-import { env, node, nodeless } from 'unenv'
-
-const { alias } = env(node, nodeless)
 
 const genStub: Plugin = {
   name: 'gen-stub',
@@ -23,8 +20,8 @@ export default defineConfig({
   define: {
     '__filename': undefined,
     'process.env': '0',
-    'process.cwd': '() => \'\'',
     'process.platform': '0',
+    'process.cwd': '() => \'\'',
   },
   optimizeDeps: {
     include: [
@@ -34,7 +31,6 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      ...alias,
       'source-map-js': 'node_modules/source-map-js/source-map.js',
     },
   },
