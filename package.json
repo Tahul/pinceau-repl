@@ -58,6 +58,7 @@
     "@volar/vue-language-service": "^1.2.0",
     "@vue/compiler-sfc": "^3.2.47",
     "@vueuse/core": "^9.13.0",
+    "babylon": "^6.18.0",
     "fflate": "^0.7.4",
     "hash-sum": "^2.0.0",
     "jiti": "^1.17.1",

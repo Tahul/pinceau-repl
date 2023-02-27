@@ -14,6 +14,7 @@ specifiers:
   '@volar/vue-language-service': ^1.2.0
   '@vue/compiler-sfc': ^3.2.47
   '@vueuse/core': ^9.13.0
+  babylon: ^6.18.0
   eslint: ^8.35.0
   execa: ^5.1.1
   fflate: ^0.7.4
@@ -57,6 +58,7 @@ dependencies:
   '@volar/vue-language-service': 1.2.0
   '@vue/compiler-sfc': 3.2.47
   '@vueuse/core': 9.13.0_vue@3.2.47
+  babylon: 6.18.0
   fflate: 0.7.4
   hash-sum: 2.0.0
   jiti: 1.17.1
@@ -1769,10 +1771,7 @@ packages:
   /@vue/server-renderer/3.2.47_vue@3.2.47:
     resolution: {integrity: sha512-dN9gc1i8EvmP9RCzvneONXsKfBRgqFeFZLurmHOveL7oH6HiFXJw5OGu294n1nHc/HMgTy6LulU/tv5/A7f/LA==}
     peerDependencies:
-      vue: 3.2.47 || ^3.2.45
-    peerDependenciesMeta:
-      vue:
-        optional: true
+      vue: 3.2.47
     dependencies:
       '@vue/compiler-ssr': 3.2.47
       '@vue/shared': 3.2.47
@@ -1943,6 +1942,11 @@ packages:
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
+    dev: false
+
+  /babylon/6.18.0:
+    resolution: {integrity: sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==}
+    hasBin: true
     dev: false
 
   /balanced-match/1.0.2:
