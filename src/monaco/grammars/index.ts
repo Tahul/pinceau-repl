@@ -42,6 +42,7 @@ async function dispatchGrammars(scopeName: string): Promise<IGrammarDefinition> 
         content: await import('./html.tmLanguage.js'),
       }
     case 'source.css':
+    case 'source.postcss':
       return {
         format: 'json',
         // @ts-ignore

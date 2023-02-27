@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Ref, VNode } from 'vue'
 import { computed, inject, ref } from 'vue'
+import { defaultThemeFile } from '../defaults'
 import type { Store } from '../types'
 
 const store = inject('store') as Store
@@ -11,7 +12,7 @@ const importMapFile = 'import-map.json'
 const showImportMap = inject('import-map') as Ref<boolean>
 const files = computed(() =>
   Object.entries(store.state.files)
-    .filter(([name, file]) => name !== importMapFile && !file.hidden)
+    .filter(([name, file]) => !([importMapFile, defaultThemeFile].includes(name)) && !file.hidden)
     .map(([name]) => name),
 )
 
@@ -117,8 +118,17 @@ function horizontalScroll(e: WheelEvent) {
       +
     </button>
 
-    <div v-if="showImportMap" class="import-map-wrapper">
+    <div class="toolbar">
       <div
+        v-if="showImportMap"
+        class="file theme"
+        :class="{ active: store.state.activeFile.filename === defaultThemeFile }"
+        @click="store.setActive(defaultThemeFile)"
+      >
+        <span class="label">Theme</span>
+      </div>
+      <div
+        v-if="showImportMap"
         class="file import-map"
         :class="{ active: store.state.activeFile.filename === importMapFile }"
         @click="store.setActive(importMapFile)"
@@ -211,7 +221,7 @@ function horizontalScroll(e: WheelEvent) {
 .icon {
   margin-top: -1px;
 }
-.import-map-wrapper {
+.toolbar {
   position: sticky;
   margin-left: auto;
   top: 0;
@@ -224,7 +234,7 @@ function horizontalScroll(e: WheelEvent) {
     rgba(255, 255, 255, 1) 25%
   );
 }
-.dark .import-map-wrapper {
+.dark .toolbar {
   background: linear-gradient(
     90deg,
     rgba(26, 26, 26, 0) 0%,

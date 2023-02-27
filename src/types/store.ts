@@ -52,4 +52,5 @@ export interface StoreOptions {
   defaultPinceauURL?: string
   defaultPinceauUtilsURL?: string
   defaultPinceauRuntimeURL?: string
+  defaultPinceauVolarURL?: string
 }

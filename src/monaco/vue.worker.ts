@@ -7,7 +7,9 @@ import * as volarWorker from '@volar/monaco/worker'
 import pinceauVolar from 'pinceau/volar'
 import type { MyWorkerContextHost } from './host'
 
-self.onmessage = () => {
+self.onmessage = (message: MessageEvent) => {
+  const data = JSON.parse(message.data)
+
   worker.initialize(
     (ctx: monaco.worker.IWorkerContext<MyWorkerContextHost>) => {
       const compilerOptions: ts.CompilerOptions = {
@@ -16,6 +18,12 @@ self.onmessage = () => {
         jsx: ts.JsxEmit.Preserve,
         module: ts.ModuleKind.ESNext,
         moduleResolution: ts.ModuleResolutionKind.NodeJs,
+        paths: {
+          '#pinceau/theme': [],
+          '#pinceau/utils': [],
+          '#pinceau/schema': [],
+          '#pinceau/definitions': [],
+        },
       }
 
       return volarWorker.createLanguageService({
@@ -39,6 +47,11 @@ self.onmessage = () => {
           compilerOptions,
           autoFetchTypes: {
             onFetchTypesFiles(files) {
+              files['/node_modules/#pinceau/theme.d.ts'] = data.theme
+              files['/node_modules/#pinceau/theme/index.d.ts'] = data.theme
+              files['/node_modules/#pinceau/utils.d.ts'] = data.utils
+              files['/node_modules/#pinceau/utils/index.d.ts'] = data.utils
+              files['/node_modules/#pinceau/package.json'] = '{ "name": "#pinceau" }'
               return ctx.host.syncAutoTypesFetchFiles(files)
             },
           },

@@ -14,6 +14,8 @@ import srcdoc from './srcdoc.html?raw'
 import { PreviewProxy } from './PreviewProxy'
 import { compileModulesForPreview } from './moduleCompiler'
 import type { Store } from '../types'
+import { debounce } from '../utils'
+import { useWebWorker } from '@vueuse/core'
 
 const props = defineProps<{ show: boolean; ssr: boolean }>()
 
@@ -46,6 +48,12 @@ watch(
       return
     }
   }
+)
+
+const updateDebounced = debounce(updatePreview, 300)
+watch(
+  () => store.state.activeFile.code,
+  updateDebounced
 )
 
 // reset sandbox when version changes
@@ -203,6 +211,7 @@ async function updatePreview() {
     // if SSR, generate the SSR bundle and eval it to render the HTML
     if (isSSR && mainFile.endsWith('.vue')) {
       const ssrModules = compileModulesForPreview(store, true)
+      
       console.log(`[@vue/repl] successfully compiled ${ssrModules.length} modules for SSR.`)
       await proxy.eval([
         `const __modules__ = {};`,

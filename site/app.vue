@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import { ref } from 'vue'
 import { ReplStore } from '../src/store'
 import Header from './Header.vue'
+
 const setVH = () => {
   document.documentElement.style.setProperty('--vh', `${window.innerHeight}px`)
 }
 window.addEventListener('resize', setVH)
 setVH()
+
 const useDevMode = ref(false)
-const useSSRMode = ref(true)
+const useSSRMode = ref(false)
 let hash = location.hash.slice(1)
 if (hash.startsWith('__DEV__')) {
   hash = hash.slice(7)
@@ -18,6 +20,7 @@ if (hash.startsWith('__SSR__')) {
   hash = hash.slice(7)
   useSSRMode.value = true
 }
+
 const store = new ReplStore({
   serializedState: hash,
   defaultVueRuntimeURL: import.meta.env.PROD
@@ -36,6 +39,7 @@ const store = new ReplStore({
     ? 'https://unpkg.com/pinceau@latest/dist/browser/index.js'
     : `${location.origin}/pinceau-proxy`,
 })
+
 // enable experimental features
 const sfcOptions = {
   script: {
@@ -50,6 +54,8 @@ const sfcOptions = {
     isProd: !useDevMode.value,
   },
 }
+
+/*
 // persist state
 watchEffect(() => {
   const newHash = store
@@ -58,6 +64,8 @@ watchEffect(() => {
     .replace(/^#/, useDevMode.value ? '#__DEV__' : '#')
   history.replaceState({}, '', newHash)
 })
+*/
+
 function toggleDevMode() {
   const dev = (useDevMode.value = !useDevMode.value)
   sfcOptions.script.inlineTemplate
@@ -67,6 +75,7 @@ function toggleDevMode() {
       = !dev
   store.setFiles(store.getFiles())
 }
+
 function toggleSSR() {
   useSSRMode.value = !useSSRMode.value
   store.setFiles(store.getFiles())

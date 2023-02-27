@@ -137,10 +137,10 @@ export async function compileFile(
   }
 
   if (
-    descriptor.styles.some(s => !['postcss', 'ts'].includes(s?.lang || ''))
+    descriptor.styles.some(s => !['postcss', 'ts', 'none'].includes(s?.lang || 'none'))
     || (descriptor.template && descriptor.template.lang)
   ) {
-    store.state.errors = ['Only lang="ts" or lang="postcss" is supported for <style> blocks.']
+    store.state.errors = ['Only no lang, lang="ts" or lang="postcss" is supported for <style> blocks.']
     return
   }
 
@@ -292,6 +292,8 @@ export async function compileFile(
 
   // clear errors
   store.state.errors = []
+
+  return compiled
 }
 
 async function doCompileScript(

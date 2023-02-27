@@ -292,8 +292,24 @@ import MyButton from './MyButton.vue'
 </script>
 
 <template>
-    <MyButton color="primary">Hello World!</MyButton>
-</template>`.trim()
+    <div>
+      <MyButton color="primary">Hello World!</MyButton>
+    </div>
+</template>
+
+<style lang="ts">
+css({
+  '#app': {
+    padding: '{space.16}',
+    backgroundColor: '#1e1e1e',
+    display: 'flex',
+    justifyContent: 'center',
+    height: '100vh',
+    width: '100vw'
+  }
+})
+</style>
+`.trim()
 
 export const defaultComponentFile = 'MyButton.vue'
 export const buttonComponent = `<script setup lang="ts">

@@ -20,6 +20,7 @@ export class ReplStore implements Store {
   private defaultPinceauURL: string
   private defaultPinceauUtilsURL: string
   private defaultPinceauRuntimeURL: string
+  private defaultPinceauVolarURL: string
   private pendingCompiler: Promise<any> | null = null
 
   constructor({
@@ -30,6 +31,7 @@ export class ReplStore implements Store {
     defaultPinceauURL = 'https://unpkg.com/pinceau@latest/dist/browser/index.js',
     defaultPinceauUtilsURL = 'https://unpkg.com/pinceau@latest/dist/browser/utils.js',
     defaultPinceauRuntimeURL = 'https://unpkg.com/pinceau@latest/dist/browser/runtime.js',
+    defaultPinceauVolarURL = 'https://unpkg.com/pinceau@latest/dist/browser/volar.js',
     showOutput = false,
     outputMode = 'preview',
   }: StoreOptions = {}) {
@@ -45,6 +47,7 @@ export class ReplStore implements Store {
           files[filename] = new File(filename, saved[filename])
         }
       }
+      history.replaceState(null, '', window.location.pathname)
     }
 
     // No state deserialized, add default files
@@ -59,6 +62,7 @@ export class ReplStore implements Store {
     this.defaultVueRuntimeURL = defaultVueRuntimeURL
     this.defaultVueServerRendererURL = defaultVueServerRendererURL
     this.defaultPinceauRuntimeURL = defaultPinceauRuntimeURL
+    this.defaultPinceauVolarURL = defaultPinceauVolarURL
     this.defaultPinceauUtilsURL = defaultPinceauUtilsURL
     this.defaultPinceauURL = defaultPinceauURL
     this.initialShowOutput = showOutput
@@ -76,6 +80,7 @@ export class ReplStore implements Store {
       vueServerRendererURL: this.defaultVueServerRendererURL,
       pinceauRuntimeURL: this.defaultPinceauRuntimeURL,
       pinceauUtilsURL: this.defaultPinceauUtilsURL,
+      pinceauVolarURL: this.defaultPinceauVolarURL,
       pinceauURL: this.defaultPinceauURL,
       resetFlip: true,
     })
@@ -139,7 +144,7 @@ export class ReplStore implements Store {
     for (const file in files) {
       await compileFile(this, files[file])
     }
-    this.state.mainFile = mainFile
+    this.state.mainFile = defaultMainFile
     this.state.files = files
     this.initImportMap()
     this.setActive(mainFile)

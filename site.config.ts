@@ -26,6 +26,7 @@ export default defineConfig({
   plugins: [vue(), genStub],
   define: {
     'process.env': {},
+    'process.version': {},
     '__COMMIT__': JSON.stringify(commit),
     '__VUE_PROD_DEVTOOLS__': JSON.stringify(true),
   },
@@ -38,14 +39,17 @@ export default defineConfig({
   resolve: {
     alias: {
       // /Users/yaelguilloux/Code/sandbox/pinceau/src/index.ts | pinceau
-      'pinceau/*': '/Users/yaelguilloux/Code/sandbox/pinceau/src/*',
-      ...alias,
+      'pinceau/*': '/Users/yaelguilloux/Code/sandbox/pinceau/dist/browser/*',
       'jiti': path.resolve(__dirname, 'site/jiti-proxy.ts'),
+      ...alias,
       'source-map-js': 'node_modules/source-map-js/source-map.js',
     },
   },
   worker: {
     format: 'es',
+    rollupOptions: {
+      external: ['fs.realpath'],
+    },
   },
   build: {
     rollupOptions: {

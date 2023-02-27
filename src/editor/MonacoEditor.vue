@@ -12,9 +12,7 @@ const emits = defineEmits<{
   (e: 'change', code: string): void
 }>()
 
-const onChange = (code: string) => {
-  emits('change', code)
-}
+const onChange = (code: string) => emits('change', code)
 
 const language = computed(() => {
   const filename = props.filename

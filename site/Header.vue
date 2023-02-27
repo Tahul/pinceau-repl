@@ -37,7 +37,11 @@ function resetVueVersion() {
 }
 
 async function copyLink() {
-  await navigator.clipboard.writeText(location.href)
+  const newHash = store
+    .serialize()
+    .replace(/^#/, props.ssr ? '#__SSR__' : '#')
+    .replace(/^#/, props.dev ? '#__DEV__' : '#')
+  await navigator.clipboard.writeText(`${location.origin}${newHash}`)
   alert('Sharable URL has been copied to clipboard.')
 }
 

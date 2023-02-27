@@ -1,10 +1,10 @@
-import { createApp, h, watchEffect } from 'vue'
+import { createApp, h } from 'vue'
+import PreviewPlugin from 'vite-plugin-vue-component-preview/client'
+
 import { Repl as ReplComponent, ReplStore } from '../src'
 import MonacoEditor from '../src/editor/MonacoEditor.vue'
 import App from './app.vue'
-import PreviewPlugin from 'vite-plugin-vue-component-preview/client'
-
-;(window as any).process = { env: {} }
+(window as any).process = { env: {} }
 
 // @ts-expect-error Custom window property
 window.VUE_DEVTOOLS_CONFIG = {
@@ -34,8 +34,6 @@ const Repl = {
         ? undefined
         : `${location.origin}/pinceau-proxy`,
     })
-
-    watchEffect(() => history.replaceState({}, '', store.serialize()))
 
     return () =>
       h(ReplComponent, {

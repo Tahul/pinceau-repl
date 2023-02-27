@@ -2,8 +2,7 @@
 import { inject, toRef } from 'vue'
 import Message from '../Message.vue'
 import { debounce } from '../utils'
-import type { Store } from '../store'
-import type { EditorComponentType } from '../types'
+import type { EditorComponentType, Store } from '../types'
 import FileSelector from './FileSelector.vue'
 
 const props = defineProps<{
@@ -14,7 +13,10 @@ const EditorComponent = toRef(props, 'editorComponent')
 
 const store = inject('store') as Store
 
-const onChange = debounce((code: string) => (store.state.activeFile.code = code), 250)
+const onChange = debounce((code: string) => {
+  store.state.activeFile.code = code
+  console.log(store.state.activeFile.filename)
+}, 500)
 </script>
 
 <template>
