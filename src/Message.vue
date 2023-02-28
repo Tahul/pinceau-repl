@@ -4,7 +4,14 @@ import type { CompilerError } from 'vue/compiler-sfc'
 
 const props = defineProps(['err', 'warn'])
 
+const emit = defineEmits(['dismiss'])
+
 const dismissed = ref(false)
+
+const dismiss = () => {
+  dismissed.value = true
+  emit('dismiss')
+}
 
 watch(
   () => [props.err, props.warn],
@@ -35,8 +42,9 @@ function formatMessage(err: string | Error): string {
       class="msg"
       :class="err ? 'err' : 'warn'"
     >
-      <pre>{{ formatMessage(err || warn) }}</pre>
-      <button class="dismiss" @click="dismissed = true">
+      <pre v-if="!$slots.default">{{ formatMessage(err || warn) }}</pre>
+      <slot v-else />
+      <button class="dismiss" @click="dismiss">
         ✕
       </button>
     </div>
