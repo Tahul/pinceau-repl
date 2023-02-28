@@ -4,7 +4,7 @@ import * as pinceauUtils from 'pinceau/utils'
 import { compileFile } from './transform'
 import { atou, utoa } from './utils'
 import { File } from './file'
-import { buttonComponent, defaultComponent, defaultComponentFile, defaultMainFile, defaultTheme, defaultThemeFile } from './defaults'
+import { PINCEAU_VERSION, buttonComponent, defaultComponent, defaultComponentFile, defaultMainFile, defaultTheme, defaultThemeFile } from './defaults'
 import type { OutputModes, SFCOptions, Store, StoreOptions, StoreState } from './types'
 
 export class ReplStore implements Store {
@@ -31,10 +31,10 @@ export class ReplStore implements Store {
     head = [],
     defaultVueRuntimeURL = `https://unpkg.com/@vue/runtime-dom@${version}/dist/runtime-dom.esm-browser.js`,
     defaultVueServerRendererURL = `https://unpkg.com/@vue/server-renderer@${version}/dist/server-renderer.esm-browser.js`,
-    defaultPinceauURL = 'https://unpkg.com/pinceau@0.18.0/dist/browser/index.js',
-    defaultPinceauUtilsURL = 'https://unpkg.com/pinceau@0.18.0/dist/browser/utils.js',
-    defaultPinceauRuntimeURL = 'https://unpkg.com/pinceau@0.18.0/dist/browser/runtime.js',
-    defaultPinceauVolarURL = 'https://unpkg.com/pinceau@0.18.0/dist/browser/volar.js',
+    defaultPinceauURL = `https://unpkg.com/pinceau@${PINCEAU_VERSION}/dist/browser/index.js`,
+    defaultPinceauUtilsURL = `https://unpkg.com/pinceau@${PINCEAU_VERSION}/dist/browser/utils.js`,
+    defaultPinceauRuntimeURL = `https://unpkg.com/pinceau@${PINCEAU_VERSION}/dist/browser/runtime.js`,
+    defaultPinceauVolarURL = `https://unpkg.com/pinceau@${PINCEAU_VERSION}/dist/browser/volar.js`,
     showOutput = false,
     outputMode = 'preview',
   }: StoreOptions = {}) {

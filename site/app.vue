@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, version } from 'vue'
 import { ReplStore } from '../src/store'
+import { PINCEAU_VERSION } from '../src/defaults'
 import Header from './Header.vue'
 
 const setVH = () => {
@@ -24,22 +25,22 @@ if (hash.startsWith('__SSR__')) {
 const store = new ReplStore({
   serializedState: hash,
   defaultVueRuntimeURL: import.meta.env.PROD
-    ? 'https://unpkg.com/@vue/runtime-dom@latest/dist/runtime-dom.esm-browser.js'
+    ? `https://unpkg.com/@vue/runtime-dom@${version}/dist/runtime-dom.esm-browser.js`
     : `${location.origin}/vue-dev-proxy`,
   defaultVueServerRendererURL: import.meta.env.PROD
-    ? 'https://unpkg.com/@vue/server-renderer@latest/dist/server-renderer.esm-browser.js'
+    ? `https://unpkg.com/@vue/server-renderer@${version}/dist/server-renderer.esm-browser.js`
     : `${location.origin}/vue-server-renderer-dev-proxy`,
   defaultPinceauRuntimeURL: import.meta.env.PROD
-    ? 'https://unpkg.com/pinceau@0.18.0/dist/browser/runtime.js'
+    ? `https://unpkg.com/pinceau@${PINCEAU_VERSION}/dist/browser/runtime.js`
     : `${location.origin}/pinceau-runtime-proxy`,
   defaultPinceauUtilsURL: import.meta.env.PROD
-    ? 'https://unpkg.com/pinceau@0.18.0/dist/browser/utils.js'
+    ? `https://unpkg.com/pinceau@${PINCEAU_VERSION}/dist/browser/utils.js`
     : `${location.origin}/pinceau-utils-proxy`,
   defaultPinceauURL: import.meta.env.PROD
-    ? 'https://unpkg.com/pinceau@0.18.0/dist/browser/index.js'
+    ? `https://unpkg.com/pinceau@${PINCEAU_VERSION}/dist/browser/index.js`
     : `${location.origin}/pinceau-proxy`,
   defaultPinceauVolarURL: import.meta.env.PROD
-    ? 'https://unpkg.com/pinceau@0.18.0/dist/browser/volar.js'
+    ? `https://unpkg.com/pinceau@${PINCEAU_VERSION}/dist/browser/volar.js`
     : `${location.origin}/pinceau-volar-proxy`,
 })
 
