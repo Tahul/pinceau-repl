@@ -86,12 +86,15 @@ async function fetchVersions(): Promise<string[]> {
 </script>
 
 <template>
-  <div class="version" @click.stop>
+  <form class="version" @click.stop>
     <span class="active-version" @click="toggle">
       <slot />
       <span class="number">{{ activeVersion }}</span>
     </span>
     <ul class="versions" :class="{ expanded }">
+      <li class="title">
+        <b>{{ props.repo }}</b> versions
+      </li>
       <li v-if="!publishedVersions">
         <a>loading versions...</a>
       </li>
@@ -108,5 +111,61 @@ async function fetchVersions(): Promise<string[]> {
         >Commits History</a>
       </li>
     </ul>
-  </div>
+  </form>
 </template>
+
+<style>
+.version svg {
+  filter: grayscale(40%) saturate(125%);
+}
+
+.version:hover .active-version::after {
+  border-top-color: var(--btn);
+}
+
+.dark .version:hover .active-version::after {
+  border-top-color: var(--highlight);
+}
+
+@media (max-width: 720px) {
+  .version {
+    display: none;
+  }
+}
+
+.versions {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 40px;
+  background-color: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  list-style-type: none;
+  padding: 8px;
+  margin: 0;
+  width: 200px;
+  max-height: calc(100vh - 70px);
+  overflow: scroll;
+}
+
+.versions a {
+  display: block;
+  padding: 6px 12px;
+  text-decoration: none;
+  cursor: pointer;
+  color: var(--base);
+}
+
+.versions a:hover {
+  color: var(--green);
+}
+
+.versions.expanded {
+  display: block;
+}
+
+.versions .title {
+  margin: 0.5rem;
+}
+</style>

@@ -7,6 +7,8 @@ import Moon from './icons/Moon.vue'
 import Share from './icons/Share.vue'
 import Download from './icons/Download.vue'
 import GitHub from './icons/GitHub.vue'
+import Pinceau from './icons/Pinceau.vue'
+import Vue from './icons/Vue.vue'
 import Versions from './Versions.vue'
 
 // @ts-ignore
@@ -52,11 +54,11 @@ function toggleDark() {
       <span>Pinceau Playground</span>
     </h1>
     <div class="links">
-      <Versions repo="vuejs/core" :set="store.setVueVersion" :reset="store.resetVueVersion">
-        Vue
-      </Versions>
       <Versions repo="tahul/pinceau" :set="store.setPinceauVersion" :reset="store.resetPinceauVersion">
-        Pinceau
+        <Pinceau style="width: 26px; height: 26px;" />
+      </Versions>
+      <Versions repo="vuejs/core" :set="store.setVueVersion" :reset="store.resetVueVersion">
+        <Vue style="width: 20px; height: 20px;" />
       </Versions>
       <button
         title="Toggle development production mode"
@@ -110,7 +112,7 @@ nav {
   --green: #3ca877;
   --purple: #904cbc;
   --btn-bg: #eee;
-
+  font-family: PaytoneOne;
   color: var(--base);
   height: var(--nav-height);
   box-sizing: border-box;
@@ -139,20 +141,18 @@ h1 {
   font-weight: 500;
   display: inline-flex;
   place-items: center;
+  flex: 1;
+  font-size: 1.1rem;
+  pointer-events: none;
+  user-select: none;
 }
 
 h1 img {
-  height: 24px;
-  margin-right: 10px;
+  height: 42px;
+  margin-right: 8px;
 }
 
-@media (max-width: 560px) {
-  h1 span {
-    font-size: 0.9em;
-  }
-}
-
-@media (max-width: 520px) {
+@media (max-width: 720px) {
   h1 span {
     display: none;
   }
@@ -236,46 +236,6 @@ h1 img {
 .links button:hover,
 .links button:hover a {
   color: var(--highlight);
-}
-
-.version:hover .active-version::after {
-  border-top-color: var(--btn);
-}
-
-.dark .version:hover .active-version::after {
-  border-top-color: var(--highlight);
-}
-
-.versions {
-  display: none;
-  position: absolute;
-  left: 0;
-  top: 40px;
-  background-color: var(--bg-light);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  list-style-type: none;
-  padding: 8px;
-  margin: 0;
-  width: 200px;
-  max-height: calc(100vh - 70px);
-  overflow: scroll;
-}
-
-.versions a {
-  display: block;
-  padding: 6px 12px;
-  text-decoration: none;
-  cursor: pointer;
-  color: var(--base);
-}
-
-.versions a:hover {
-  color: var(--green);
-}
-
-.versions.expanded {
-  display: block;
 }
 
 .links > * {
