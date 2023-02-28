@@ -3,12 +3,12 @@ import { loadTheme } from 'monaco-volar'
 import * as monaco from 'monaco-editor-core'
 import * as onigasm from 'onigasm'
 import onigasmWasm from 'onigasm/lib/onigasm.wasm?url'
-import { inject, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watchEffect } from 'vue'
-import type { Store } from '../types'
+import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watchEffect } from 'vue'
 import { getOrCreateModel } from './utils'
 import { loadGrammars } from './grammars'
 import { setupMonacoEnv } from './env'
 
+setupMonacoEnv(true)
 onigasm.loadWASM(onigasmWasm)
 </script>
 
@@ -27,10 +27,6 @@ const emits = defineEmits<{
   (e: 'change', value: string): void
   (e: 'save', value: string): void
 }>()
-
-const store = inject('store') as Store
-
-setupMonacoEnv(store, true)
 
 const containerRef = ref<HTMLDivElement | null>()
 const ready = ref(false)

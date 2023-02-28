@@ -4,16 +4,14 @@ import EditorWorker from 'monaco-editor-core/esm/vs/editor/editor.worker?worker'
 import type { LanguageService } from '@volar/vue-language-service'
 import { editor, languages } from 'monaco-editor-core'
 import * as volar from '@volar/monaco'
-import type { Store } from '../types'
+import VueWorker from 'monaco-volar/vue.worker?worker'
 import { MyWorkerContextHost } from './host'
-import VueWorker from './vue.worker?worker'
 
 export function loadOnigasm() {
   return onigasm.loadWASM(onigasmWasm)
 }
 
 export function setupMonacoEnv(
-  store: Store,
   takeoverMode = false,
 ) {
   let initialized = false
