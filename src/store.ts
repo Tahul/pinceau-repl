@@ -1,5 +1,6 @@
 import { reactive, version, watchEffect } from 'vue'
 import * as defaultCompiler from 'vue/compiler-sfc'
+import * as pinceauUtils from 'pinceau/utils'
 import { compileFile } from './transform'
 import { atou, utoa } from './utils'
 import { File } from './file'
@@ -9,6 +10,7 @@ import type { OutputModes, SFCOptions, Store, StoreOptions, StoreState } from '.
 export class ReplStore implements Store {
   state: StoreState
   compiler = defaultCompiler
+  pinceauUtils = pinceauUtils
   vueVersion?: string
   pinceauVersion?: string
   options?: SFCOptions
@@ -22,16 +24,17 @@ export class ReplStore implements Store {
   private defaultPinceauRuntimeURL: string
   private defaultPinceauVolarURL: string
   private pendingCompiler: Promise<any> | null = null
+  private pendingUtils: Promise<any> | null = null
 
   constructor({
     serializedState = '',
     head = [],
     defaultVueRuntimeURL = `https://unpkg.com/@vue/runtime-dom@${version}/dist/runtime-dom.esm-browser.js`,
     defaultVueServerRendererURL = `https://unpkg.com/@vue/server-renderer@${version}/dist/server-renderer.esm-browser.js`,
-    defaultPinceauURL = 'https://unpkg.com/pinceau@latest/dist/browser/index.js',
-    defaultPinceauUtilsURL = 'https://unpkg.com/pinceau@latest/dist/browser/utils.js',
-    defaultPinceauRuntimeURL = 'https://unpkg.com/pinceau@latest/dist/browser/runtime.js',
-    defaultPinceauVolarURL = 'https://unpkg.com/pinceau@latest/dist/browser/volar.js',
+    defaultPinceauURL = 'https://unpkg.com/pinceau@0.18.0/dist/browser/index.js',
+    defaultPinceauUtilsURL = 'https://unpkg.com/pinceau@0.18.0/dist/browser/utils.js',
+    defaultPinceauRuntimeURL = 'https://unpkg.com/pinceau@0.18.0/dist/browser/runtime.js',
+    defaultPinceauVolarURL = 'https://unpkg.com/pinceau@0.18.0/dist/browser/volar.js',
     showOutput = false,
     outputMode = 'preview',
   }: StoreOptions = {}) {
@@ -245,6 +248,47 @@ export class ReplStore implements Store {
     this.setImportMap(importMap)
     this.forceSandboxReset()
     console.info(`[@vue/repl] Now using Vue version: ${version}`)
+  }
+
+  async setPinceauVersion(version: string) {
+    this.pinceauVersion = version
+    const newPinceauURL = `https://unpkg.com/pinceau@${version}/dist/browser/index.js`
+    const newPinceauUtilsURL = `https://unpkg.com/pinceau@${version}/dist/browser/utils.js`
+    const newPinceauRuntimeURL = `https://unpkg.com/pinceau@${version}/dist/browser/runtime.js`
+    const newPinceauVolarURL = `https://unpkg.com/pinceau@${version}/dist/browser/volar.js`
+    this.pendingUtils = import(/* @vite-ignore */ newPinceauUtilsURL)
+    this.pinceauUtils = await this.pendingUtils
+    this.pendingUtils = null
+    this.state.pinceauRuntimeURL = newPinceauRuntimeURL
+    this.state.pinceauURL = newPinceauURL
+    this.state.pinceauUtilsURL = newPinceauUtilsURL
+    this.state.pinceauVolarURL = newPinceauVolarURL
+    const importMap = this.getImportMap()
+    const imports = importMap.imports || (importMap.imports = {})
+    imports.pinceau = newPinceauURL
+    imports['pinceau/runtime'] = newPinceauRuntimeURL
+    imports['pinceau/utils'] = newPinceauUtilsURL
+    imports['pinceau/volar'] = newPinceauVolarURL
+    this.setImportMap(importMap)
+    this.forceSandboxReset()
+    console.info(`[@vue/repl] Now using Pinceau version: ${version}`)
+  }
+
+  resetPinceauVersion() {
+    this.pinceauVersion = undefined
+    const importMap = this.getImportMap()
+    const imports = importMap.imports || (importMap.imports = {})
+    this.state.pinceauURL = this.defaultPinceauURL
+    this.state.pinceauRuntimeURL = this.defaultPinceauRuntimeURL
+    this.state.pinceauUtilsURL = this.defaultPinceauUtilsURL
+    this.state.pinceauVolarURL = this.defaultPinceauVolarURL
+    imports.pinceau = this.defaultPinceauURL
+    imports['pinceau/runtime'] = this.defaultPinceauRuntimeURL
+    imports['pinceau/utils'] = this.defaultPinceauUtilsURL
+    imports['pinceau/volar'] = this.defaultPinceauVolarURL
+    this.setImportMap(importMap)
+    this.forceSandboxReset()
+    console.info('[@vue/repl] Now using default Pinceau version')
   }
 
   resetVueVersion() {

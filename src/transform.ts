@@ -10,7 +10,6 @@ import {
   transformRef,
 } from 'vue/compiler-sfc'
 import { transform } from 'sucrase'
-import { createTokensHelper, defaultExport, printAst, theme, transforms, visitAst } from 'pinceau/utils'
 // @ts-ignore
 import hashId from 'hash-sum'
 
@@ -40,6 +39,8 @@ export async function compileFile(
   store: Store,
   { filename, code, compiled }: File,
 ) {
+  const { defaultExport, visitAst, printAst, theme, createTokensHelper, transforms } = store.pinceauUtils
+
   if (!code.trim()) {
     store.state.errors = []
     return

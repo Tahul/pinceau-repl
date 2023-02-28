@@ -30,16 +30,16 @@ const store = new ReplStore({
     ? 'https://unpkg.com/@vue/server-renderer@latest/dist/server-renderer.esm-browser.js'
     : `${location.origin}/vue-server-renderer-dev-proxy`,
   defaultPinceauRuntimeURL: import.meta.env.PROD
-    ? 'https://unpkg.com/pinceau@latest/dist/browser/runtime.js'
+    ? 'https://unpkg.com/pinceau@0.18.0/dist/browser/runtime.js'
     : `${location.origin}/pinceau-runtime-proxy`,
   defaultPinceauUtilsURL: import.meta.env.PROD
-    ? 'https://unpkg.com/pinceau@latest/dist/browser/utils.js'
+    ? 'https://unpkg.com/pinceau@0.18.0/dist/browser/utils.js'
     : `${location.origin}/pinceau-utils-proxy`,
   defaultPinceauURL: import.meta.env.PROD
-    ? 'https://unpkg.com/pinceau@latest/dist/browser/index.js'
+    ? 'https://unpkg.com/pinceau@0.18.0/dist/browser/index.js'
     : `${location.origin}/pinceau-proxy`,
   defaultPinceauVolarURL: import.meta.env.PROD
-    ? 'https://unpkg.com/pinceau@latest/dist/browser/volar.js'
+    ? 'https://unpkg.com/pinceau@0.18.0/dist/browser/volar.js'
     : `${location.origin}/pinceau-volar-proxy`,
 })
 

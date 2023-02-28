@@ -1,4 +1,5 @@
 import type * as defaultCompiler from 'vue/compiler-sfc'
+import type * as pinceauUtils from 'pinceau/utils'
 import type { File } from '../file'
 import type { OutputModes } from './output'
 
@@ -12,6 +13,7 @@ export interface StoreState {
   pinceauRuntimeURL: string
   pinceauUtilsURL: string
   pinceauURL: string
+  pinceauVolarURL: string
   head: string[]
   // used to force reset the sandbox
   resetFlip: boolean
@@ -27,6 +29,7 @@ export interface Store {
   state: StoreState
   options?: SFCOptions
   compiler: typeof defaultCompiler
+  pinceauUtils: typeof pinceauUtils
   vueVersion?: string
   pinceauVersion?: string
   init: () => void

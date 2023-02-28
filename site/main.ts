@@ -24,15 +24,15 @@ const Repl = {
       defaultVueServerRendererURL: import.meta.env.PROD
         ? undefined
         : `${location.origin}/vue-server-renderer-dev-proxy`,
+      defaultPinceauURL: import.meta.env.PROD
+        ? undefined
+        : `${location.origin}/pinceau-proxy`,
       defaultPinceauRuntimeURL: import.meta.env.PROD
         ? undefined
         : `${location.origin}/pinceau-runtime-proxy`,
       defaultPinceauUtilsURL: import.meta.env.PROD
         ? undefined
         : `${location.origin}/pinceau-utils-proxy`,
-      defaultPinceauURL: import.meta.env.PROD
-        ? undefined
-        : `${location.origin}/pinceau-proxy`,
       defaultPinceauVolarURL: import.meta.env.PROD
         ? undefined
         : `${location.origin}/pinceau-volar-proxy`,
