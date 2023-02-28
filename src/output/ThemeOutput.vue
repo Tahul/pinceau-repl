@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Store, ThemeOutputModes } from '../types'
 import { inject, ref, computed } from 'vue'
+import Preview from './Preview.vue'
 import Monaco from '../monaco/Monaco.vue'
 
 const props = defineProps<{
@@ -11,15 +12,20 @@ const props = defineProps<{
 const store = inject('store') as Store
 const modes = computed(() =>
   props.showCompileOutput
-    ? (['css', 'ts', 'utils', 'definitions', 'schema'] as const)
-    : (['css'] as const)
+    ? (['preview', 'css', 'ts', 'utils', 'definitions', 'schema'] as const)
+    : (['preview'] as const)
 )
 
 const mode = ref<ThemeOutputModes>(
   (modes.value as readonly string[]).includes(store.initialOutputMode)
     ? store.initialOutputMode as ThemeOutputModes
-    : 'css'
+    : 'preview'
 )
+
+const value = computed(() => {
+  if (mode.value === 'preview') return ''
+  return store.state.activeFile.compiled[mode.value]
+})
 </script>
 
 <template>
@@ -34,12 +40,13 @@ const mode = ref<ThemeOutputModes>(
   </div>
 
   <div class="output-container">
+    <Preview :show="mode === 'preview'" :ssr="ssr"/>
     <Monaco
       :language="mode === 'css' ? 'css' : 'typescript'"
       :readonly="true"
       :filename="store.state.activeFile.filename + '.' + mode"
       :key="store.state.activeFile.filename + '.' + mode"
-      :value="store.state.activeFile.compiled[mode]"
+      :value="value"
     />
   </div>
 </template>

@@ -26,6 +26,9 @@ const App = {
       defaultPinceauURL: import.meta.env.PROD
         ? undefined
         : `${location.origin}/src/pinceau-proxy`,
+      defaultPinceauVolarURL: import.meta.env.PROD
+        ? undefined
+        : `${location.origin}/src/pinceau-volar-proxy`,
     })
 
     watchEffect(() => history.replaceState({}, '', store.serialize()))

@@ -15,7 +15,6 @@ import { PreviewProxy } from './PreviewProxy'
 import { compileModulesForPreview } from './moduleCompiler'
 import type { Store } from '../types'
 import { debounce } from '../utils'
-import { useWebWorker } from '@vueuse/core'
 
 const props = defineProps<{ show: boolean; ssr: boolean }>()
 

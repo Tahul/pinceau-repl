@@ -16,6 +16,12 @@ async function dispatchGrammars(scopeName: string): Promise<IGrammarDefinition> 
         // @ts-ignore
         content: await import('./TypeScript.tmLanguage.js'),
       }
+    case 'source.json':
+      return {
+        format: 'json',
+        // @ts-ignore
+        content: await import('./json.tmLanguage.js'),
+      }
     case 'source.tsx':
       return {
         format: 'json',
@@ -81,6 +87,7 @@ export async function loadGrammars(editor: monaco.editor.IStandaloneCodeEditor) 
   const grammars = new Map()
   grammars.set('vue', 'source.vue')
   grammars.set('typescript', 'source.ts')
+  grammars.set('json', 'source.json')
   grammars.set('css', 'source.css')
   grammars.set('markdown', 'source.markdown')
   grammars.set('stylus', 'source.markdown')

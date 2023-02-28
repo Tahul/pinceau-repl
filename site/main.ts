@@ -33,6 +33,9 @@ const Repl = {
       defaultPinceauURL: import.meta.env.PROD
         ? undefined
         : `${location.origin}/pinceau-proxy`,
+      defaultPinceauVolarURL: import.meta.env.PROD
+        ? undefined
+        : `${location.origin}/pinceau-volar-proxy`,
     })
 
     return () =>

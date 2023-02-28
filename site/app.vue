@@ -38,6 +38,9 @@ const store = new ReplStore({
   defaultPinceauURL: import.meta.env.PROD
     ? 'https://unpkg.com/pinceau@latest/dist/browser/index.js'
     : `${location.origin}/pinceau-proxy`,
+  defaultPinceauVolarURL: import.meta.env.PROD
+    ? 'https://unpkg.com/pinceau@latest/dist/browser/volar.js'
+    : `${location.origin}/pinceau-volar-proxy`,
 })
 
 // enable experimental features
