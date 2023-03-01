@@ -1,4 +1,4 @@
-export const PINCEAU_VERSION = '0.18.1'
+export const PINCEAU_VERSION = '0.18.4'
 export const defaultThemeFile = 'tokens.config.ts'
 export const defaultTheme = `import { defineTheme } from 'pinceau'
 import type { PinceauTheme, ThemeTokens } from 'pinceau'
