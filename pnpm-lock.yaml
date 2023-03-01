@@ -71,7 +71,7 @@ dependencies:
   nanoid: 4.0.1
   onigasm: 2.2.5
   pathe: 1.1.0
-  pinceau: 0.18.1_postcss@8.4.21
+  pinceau: 0.18.4_postcss@8.4.21
   postcss: 8.4.21
   postcss-custom-properties: 13.1.4_postcss@8.4.21
   postcss-dark-theme-class: 0.7.3_postcss@8.4.21
@@ -1341,8 +1341,8 @@ packages:
       eslint-visitor-keys: 3.3.0
     dev: true
 
-  /@unocss/reset/0.50.1:
-    resolution: {integrity: sha512-BcANWHHrKgHML5TLaPuSl148L2WLA938r0pLi4PrRTmZtkgP4OhBLs8U8BaDNVVGR/nli7VDxNRZFb9es3Tq9Q==}
+  /@unocss/reset/0.50.2:
+    resolution: {integrity: sha512-2oheAsguYkp0DrGfIGu9oPf1n74OPwf4WUCURCN47DzaWfZRLLVNve85KOlpO00yry9GwdtuUf6CqhEV/K+TnA==}
     dev: false
 
   /@vitejs/plugin-vue/4.0.0_vite@4.1.4+vue@3.2.47:
@@ -1860,7 +1860,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001458
-      electron-to-chromium: 1.4.313
+      electron-to-chromium: 1.4.314
       node-releases: 2.0.10
       update-browserslist-db: 1.0.10_browserslist@4.21.5
     dev: false
@@ -2037,6 +2037,7 @@ packages:
   /commander/9.5.0:
     resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
     engines: {node: ^12.20.0 || >=14}
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -2210,8 +2211,8 @@ packages:
       sigmund: 1.0.1
     dev: false
 
-  /electron-to-chromium/1.4.313:
-    resolution: {integrity: sha512-QckB9OVqr2oybjIrbMI99uF+b9+iTja5weFe0ePbqLb5BHqXOJUO1SG6kDj/1WtWPRIBr51N153AEq8m7HuIaA==}
+  /electron-to-chromium/1.4.314:
+    resolution: {integrity: sha512-+3RmNVx9hZLlc0gW//4yep0K5SYKmIvB5DXg1Yg6varsuAHlHwTeqeygfS8DWwLCsNOWrgj+p9qgM5WYjw1lXQ==}
     dev: false
 
   /emmet/2.3.6:
@@ -4150,10 +4151,10 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
-  /pinceau/0.18.1_postcss@8.4.21:
-    resolution: {integrity: sha512-2JcRT5sLg52Aq1il28VlUdS59i4gtGwLfO9Q92o+eX098zGI0VkvrRhvN+NmxQl5xxkdQF185x8CMkEQeuMmMw==}
+  /pinceau/0.18.4_postcss@8.4.21:
+    resolution: {integrity: sha512-3PpZb4rbtNRVLlLZpQaTro7dD7JCwMNY7mTOkvmDJLu0xQFdZJMEO7yoNmkKcfzBqKTJ+2z8/I1+BjGjmSLw6A==}
     dependencies:
-      '@unocss/reset': 0.50.1
+      '@unocss/reset': 0.50.2
       '@volar/vue-language-core': 1.2.0-patch.2
       acorn: 8.8.2
       chroma-js: 2.4.2
