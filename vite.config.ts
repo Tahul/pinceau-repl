@@ -4,8 +4,6 @@ import vue from '@vitejs/plugin-vue'
 import preview from 'vite-plugin-vue-component-preview'
 import { env, node, nodeless } from 'unenv'
 
-const isDev = process.env.NODE_ENV === 'development'
-
 const unenv = env(node, nodeless)
 
 const genStub: Plugin = {
@@ -21,8 +19,10 @@ const genStub: Plugin = {
 }
 
 const define = {
-  __filename: undefined,
-  process: isDev ? unenv.inject.process : 'process',
+  '__filename': undefined,
+  'process.env': {},
+  'process.version': {},
+  '__VUE_PROD_DEVTOOLS__': JSON.stringify(true),
 }
 
 export default defineConfig({
