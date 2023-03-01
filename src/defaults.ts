@@ -286,8 +286,7 @@ export default defineTheme({
       marginRight: v,
     }),
   },
-})
-`
+})`
 
 export const defaultMainFile = 'App.vue'
 export const defaultComponent = `<script setup lang="ts">
@@ -295,9 +294,9 @@ import MyButton from './MyButton.vue'
 </script>
 
 <template>
-    <div>
-      <MyButton color="primary">Hello World!</MyButton>
-    </div>
+  <MyButton color="primary">
+    Hello World!
+  </MyButton>
 </template>
 
 <style lang="ts">
@@ -305,14 +304,11 @@ css({
   '#app': {
     padding: '{space.16}',
     backgroundColor: '#1e1e1e',
-    display: 'flex',
-    justifyContent: 'center',
     height: '100vh',
     width: '100vw'
   }
 })
-</style>
-`.trim()
+</style>`
 
 export const defaultComponentFile = 'MyButton.vue'
 export const buttonComponent = `<script setup lang="ts">
