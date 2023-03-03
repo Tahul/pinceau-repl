@@ -1,7 +1,6 @@
 import * as onigasm from 'onigasm'
 import onigasmWasm from 'onigasm/lib/onigasm.wasm?url'
 import EditorWorker from 'monaco-editor-core/esm/vs/editor/editor.worker?worker'
-import type { LanguageService } from '@volar/vue-language-service'
 import { editor, languages, Uri } from 'monaco-editor-core'
 import * as volar from '@volar/monaco'
 import { createDtsHost } from '@volar/monaco/worker'
@@ -56,6 +55,18 @@ export function setupMonacoEnv(
         // else { getOrCreateModel(Uri.file(fileName), 'typescript', text) }
       }
     )
+
+    let lastVersion = -1;
+
+    setInterval(async () => {
+      const newVersion = await dtsHost.getVersion();
+      console.log(newVersion);
+      if (newVersion !== lastVersion) {
+        lastVersion = newVersion;
+        const json = await dtsHost.toJson();
+        console.log(json); // bundle this and preload next time
+      }
+    }, 1000)
     // dtsServer.files.set('/node_modules/#pinceau/theme.d.ts', data.theme)
     // dtsServer.files.set('/node_modules/#pinceau/utils.d.ts', data.utils)
     // dtsServer.files.set('/node_modules/#pinceau/utils/index.d.ts', data.utils)
@@ -63,7 +74,7 @@ export function setupMonacoEnv(
 
     console.log('setup')
 
-    const worker = editor.createWebWorker<LanguageService>({
+    const worker = editor.createWebWorker<any>({
       moduleId: 'vs/language/vue/vueWorker',
       label: 'vue',
       createData: {},
