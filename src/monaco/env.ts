@@ -49,6 +49,7 @@ export function setupMonacoEnv(
 
     const dtsHost = createDtsHost(
       'https://unpkg.com/',
+      {}, // dts module versions
       (fileName, text) => {
         console.log(fileName, text?.length)
         // if (fileName.endsWith('.json')) { getOrCreateModel(Uri.file(fileName), 'json', text) }
