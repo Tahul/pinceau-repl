@@ -85,6 +85,7 @@ export function setupMonacoEnv(
       Uri.file('/MyButton.vue'),
     ]
     volar.editor.activateMarkers(worker, languageId, 'vue', getSyncUris, editor)
+    volar.editor.activateAutoInsertion(worker, languageId, getSyncUris, editor)
     await volar.languages.registerProvides(worker, languageId, getSyncUris, languages)
   }
 }

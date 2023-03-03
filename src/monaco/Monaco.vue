@@ -1,11 +1,10 @@
 <script lang="ts">
-import { loadTheme } from 'monaco-volar'
+import { loadTheme, loadGrammars } from 'monaco-volar'
 import * as monaco from 'monaco-editor-core'
 import * as onigasm from 'onigasm'
 import onigasmWasm from 'onigasm/lib/onigasm.wasm?url'
 import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watchEffect } from 'vue'
 import { getOrCreateModel } from './utils'
-import { loadGrammars } from './grammars'
 import { setupMonacoEnv } from './env'
 
 setupMonacoEnv(true)
