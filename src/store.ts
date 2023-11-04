@@ -1,4 +1,5 @@
 import { version, reactive, watchEffect, watch } from 'vue'
+import { version as tresVersion } from '@tresjs/core/package.json'
 import * as defaultCompiler from 'vue/compiler-sfc'
 import { compileFile } from './transform'
 import { utoa, atou } from './utils'
@@ -10,22 +11,61 @@ import {
 import { OutputModes } from './output/types'
 import type { editor } from 'monaco-editor-core'
 
-const defaultMainFile = 'src/App.vue'
+const defaultMainFile = 'src/TresApp.vue'
 
 export const importMapFile = 'import-map.json'
 export const tsconfigFile = 'tsconfig.json'
 
 const welcomeCode = `
-<script setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { BasicShadowMap, SRGBColorSpace, NoToneMapping } from 'three';
+import { TresCanvas } from '@tresjs/core';
+import { OrbitControls } from '@tresjs/cientos';
 
-const msg = ref('Hello World!')
+const gl = {
+  clearColor: '#82DBC5',
+  shadows: true,
+  alpha: false,
+  shadowMapType: BasicShadowMap,
+  outputColorSpace: SRGBColorSpace,
+  toneMapping: NoToneMapping,
+};
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-  <input v-model="msg">
+  <TresCanvas v-bind="gl">
+    <TresPerspectiveCamera :position="[9, 9, 9]" />
+    <OrbitControls />
+    <TresMesh :position="[-2, 2, 0]" :rotation="[0, Math.PI, 0]">
+      <TresConeGeometry :args="[1, 1.5, 3]" />
+      <TresMeshToonMaterial color="#82DBC5" />
+    </TresMesh>
+    <TresMesh :position="[0, 0, 0]" cast-shadow>
+      <TresBoxGeometry :args="[1.5, 1.5, 1.5]" />
+      <TresMeshToonMaterial color="#4F4F4F" />
+    </TresMesh>
+    <TresMesh :position="[2, -2, 0]">
+      <TresSphereGeometry />
+      <TresMeshToonMaterial color="#FBB03B" />
+    </TresMesh>
+    <TresDirectionalLight :position="[0, 2, 4]" :intensity="1.2" cast-shadow />
+  </TresCanvas>
 </template>
+
+<style>
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+#app {
+  height: 100%;
+  width: 100%;
+  background-color: #000;
+}
+</style>
 `.trim()
 
 const tsconfig = {
@@ -37,6 +77,7 @@ const tsconfig = {
     module: 'ESNext',
     moduleResolution: 'Bundler',
     allowImportingTsExtensions: true,
+    types: ['three']
   },
   vueCompilerOptions: {
     target: 3.3,
@@ -124,12 +165,20 @@ export interface StoreOptions {
   outputMode?: OutputModes | string
   defaultVueRuntimeURL?: string
   defaultVueServerRendererURL?: string
+  defaultTresCoreURL?: string
+  defaultTresCientosURL?: string
+  defaultTweakpanesURL?: string
+  defaultThreeURL?: string
+  defaultVueUseURL?: string
+  defaultVueUseSharedURL?: string
+  defaultVueDemiURL?: string
 }
 
 export class ReplStore implements Store {
   state: StoreState
   compiler = defaultCompiler
   vueVersion?: string
+  tresVersion?: string
   options?: SFCOptions
   initialShowOutput: boolean
   initialOutputMode: OutputModes
@@ -138,11 +187,25 @@ export class ReplStore implements Store {
   private defaultVueRuntimeURL: string
   private defaultVueServerRendererURL: string
   private pendingCompiler: Promise<any> | null = null
+  private defaultTresCoreURL: string
+  private defaultTresCientosURL: string
+  private defaultTweakpanesURL: string
+  private defaultThreeURL: string
+  private defaultVueUseURL: string
+  private defaultVueUseSharedURL: string
+  private defaultVueDemiURL: string
 
   constructor({
     serializedState = '',
     defaultVueRuntimeURL = `https://cdn.jsdelivr.net/npm/@vue/runtime-dom@${version}/dist/runtime-dom.esm-browser.js`,
     defaultVueServerRendererURL = `https://cdn.jsdelivr.net/npm/@vue/server-renderer@${version}/dist/server-renderer.esm-browser.js`,
+    defaultTresCoreURL = `https://cdn.jsdelivr.net/npm/@tresjs/core@${tresVersion}/dist/tres.js`,
+    defaultTresCientosURL = `https://cdn.jsdelivr.net/npm/@tresjs/cientos@${tresVersion}/dist/trescientos.js`,
+    defaultTweakpanesURL = `https://cdn.jsdelivr.net/npm/tweakpane@4.0.1/dist/tweakpane.min.js`,
+    defaultThreeURL = 'https://cdn.jsdelivr.net/npm/three@0.158.0/+esm',
+    defaultVueUseURL = 'https://cdn.jsdelivr.net/npm/@vueuse/core@10.5.0/index.mjs',
+    defaultVueUseSharedURL = 'https://cdn.jsdelivr.net/npm/@vueuse/shared@10.5.0/index.mjs',
+    defaultVueDemiURL = 'https://cdn.jsdelivr.net/npm/vue-demi@0.14.6/lib/index.mjs',
     showOutput = false,
     outputMode = 'preview',
   }: StoreOptions = {}) {
@@ -159,6 +222,13 @@ export class ReplStore implements Store {
 
     this.defaultVueRuntimeURL = defaultVueRuntimeURL
     this.defaultVueServerRendererURL = defaultVueServerRendererURL
+    this.defaultTresCoreURL = defaultTresCoreURL
+    this.defaultTresCientosURL = defaultTresCientosURL
+    this.defaultTweakpanesURL = defaultTweakpanesURL
+    this.defaultThreeURL = defaultThreeURL
+    this.defaultVueUseURL = defaultVueUseURL
+    this.defaultVueUseSharedURL = defaultVueUseSharedURL
+    this.defaultVueDemiURL = defaultVueDemiURL
     this.initialShowOutput = showOutput
     this.initialOutputMode = outputMode as OutputModes
 
@@ -176,6 +246,9 @@ export class ReplStore implements Store {
       typescriptVersion: 'latest',
       typescriptLocale: undefined,
       resetFlip: true,
+      dependencyVersion: {
+        '@types/three': '0.158.1'
+      }
     })
 
     this.initImportMap()
@@ -356,6 +429,13 @@ export class ReplStore implements Store {
             imports: {
               vue: this.defaultVueRuntimeURL,
               'vue/server-renderer': this.defaultVueServerRendererURL,
+              '@tresjs/core': this.defaultTresCoreURL,
+              '@tresjs/cientos': this.defaultTresCientosURL,
+              'tweakpane': this.defaultTweakpanesURL,
+              'three': this.defaultThreeURL,
+              '@vueuse/core': this.defaultVueUseURL,
+              '@vueuse/shared': this.defaultVueUseSharedURL,
+              'vue-demi': this.defaultVueDemiURL,
             },
           },
           null,

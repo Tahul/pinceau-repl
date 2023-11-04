@@ -1,9 +1,12 @@
 import { createApp, h, watchEffect } from 'vue'
 import { Repl, ReplStore } from '../src'
 import MonacoEditor from '../src/editor/MonacoEditor.vue'
+import { templateCompilerOptions } from '@tresjs/core'
 // import CodeMirrorEditor from '../src/editor/CodeMirrorEditor.vue'
 import { EditorComponentType } from '../src/editor/types'
-;(window as any).process = { env: {} }
+  ; (window as any).process = { env: {} }
+
+const isCustomElement = templateCompilerOptions.template.compilerOptions.isCustomElement
 
 const App = {
   setup() {
@@ -50,6 +53,11 @@ const App = {
           script: {
             // inlineTemplate: false
           },
+          template: {
+            compilerOptions: {
+              isCustomElement
+            }
+          }
         },
         // showCompileOutput: false,
         // showImportMap: false

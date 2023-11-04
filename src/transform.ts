@@ -10,6 +10,7 @@ import hashId from 'hash-sum'
 
 export const COMP_IDENTIFIER = `__sfc__`
 
+
 async function transformTS(src: string) {
   return transform(src, {
     transforms: ['typescript'],
