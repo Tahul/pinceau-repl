@@ -79,7 +79,13 @@ self.onmessage = async (msg: MessageEvent<WorkerMessage>) => {
         { typescript: ts as any },
         env,
         resolveConfig(
-          {},
+          {
+            services: {
+              'pug': () => ({}),
+              'emmet': () => ({}),
+              'pug-beautify': () => ({}),
+            }
+          },
           compilerOptions,
           tsconfig.vueCompilerOptions || {},
           ts as any
