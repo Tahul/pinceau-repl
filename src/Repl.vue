@@ -120,8 +120,8 @@ defineExpose({ reload })
   --border: #ddd;
   --text-light: #888;
   --font-code: Menlo, Monaco, Consolas, 'Courier New', monospace;
-  --color-branding: #42b883;
-  --color-branding-dark: #416f9c;
+  --color-branding: #82dbc5;
+  --color-branding-dark: #fbb03b;
   --header-height: 38px;
 
   height: 100%;
@@ -138,8 +138,8 @@ defineExpose({ reload })
   --bg-soft: #242424;
   --border: #383838;
   --text-light: #aaa;
-  --color-branding: #42d392;
-  --color-branding-dark: #89ddff;
+  --color-branding: #82dbc5;
+  --color-branding-dark: #fbb03b;
 }
 
 :deep(button) {
